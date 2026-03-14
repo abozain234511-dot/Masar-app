@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masar — Diet Plan</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .day-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px
+        }
+
+        .dnav-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--border2);
+            color: var(--purple-l);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .dnav-btn:hover {
+            background: rgba(124, 58, 237, .1);
+            border-color: var(--border)
+        }
+
+        .dnav-info {
+            text-align: center;
+            flex: 1
+        }
+
+        .dnav-day {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #22d3ee
+        }
+
+        .dnav-sub {
+            font-size: .7rem;
+            color: var(--text-3);
+            margin-top: 2px
+        }
+
+        .dsum {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        .ds {
+            background: rgba(124, 58, 237, .05);
+            border: 1px solid rgba(124, 58, 237, .12);
+            border-radius: 11px;
+            padding: 13px;
+            text-align: center
+        }
+
+        .ds-v {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #c4b5fd
+        }
+
+        .ds-l {
+            font-size: .58rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-3);
+            margin-top: 3px;
+            font-family: 'Outfit', sans-serif
+        }
+
+        .meal-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px
+        }
+
+        .meal-type-lbl {
+            font-family: 'Outfit', sans-serif;
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-3);
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .meal-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .meal-kcal {
+            font-family: 'Outfit', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--cyan)
+        }
+
+        .meal-time {
+            font-size: .65rem;
+            color: var(--text-3);
+            margin-bottom: 6px
+        }
+
+        .meal-name {
+            font-size: .95rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 9px
+        }
+
+        .meal-macros {
+            display: flex;
+            gap: 14px;
+            font-size: .7rem;
+            color: var(--text-3)
+        }
+
+        .macro-i {
+            display: flex;
+            align-items: center;
+            gap: 4px
+        }
+
+        .macro-i b {
+            color: var(--text-2)
+        }
+
+        .meal-components {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .comp-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple-l);
+            margin-bottom: 4px;
+        }
+
+        .comp-i {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-2);
+            padding: 4px 0;
+        }
+
+        .comp-n {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--purple);
+            opacity: 0.6;
+        }
+
+        .comp-q {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .swap-btn {
+            padding: 4px 11px;
+            border-radius: 6px;
+            font-size: .65rem;
+            font-weight: 700;
+            background: transparent;
+            border: 1px solid rgba(0, 245, 212, .2);
+            color: var(--cyan);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Outfit', sans-serif
+        }
+
+        .swap-btn:hover {
+            border-color: var(--cyan);
+            background: rgba(6, 182, 212, .08)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="dumbbell" style="color:#fff;width:22px;height:22px"></i>
+                </div><span class="logo-text">Masar</span>
+            </div>
+            <div class="nav-section-label" data-i18n="main">Main</div>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i><span class="nav-label"
+                    data-i18n="dashboard">Dashboard</span></a>
+            <a href="stats.html" class="nav-item"><i data-lucide="zap"></i><span class="nav-label"
+                    data-i18n="stats">Stats</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="tools">Tools</div>
+            <a href="diet.html" class="nav-item active"><i data-lucide="utensils"></i><span class="nav-label"
+                    data-i18n="diet">Diet Plan</span></a>
+            <a href="workout.html" class="nav-item"><i data-lucide="dumbbell"></i><span class="nav-label"
+                    data-i18n="workout">Workout</span></a>
+            <a href="progress.html" class="nav-item"><i data-lucide="trending-up"></i><span class="nav-label"
+                    data-i18n="progress">Progress</span></a>
+            <a href="shopping.html" class="nav-item"><i data-lucide="shopping-cart"></i><span class="nav-label"
+                    data-i18n="shopping">Shopping</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="account">Account</div>
+            <a href="settings.html" class="nav-item"><i data-lucide="settings"></i><span class="nav-label"
+                    data-i18n="settings">Settings</span></a>
+            <a href="login.html" id="auth-link" class="nav-item"><i data-lucide="log-in"></i><span class="nav-label"
+                    data-i18n="login">Login</span></a>
+
+            <div class="sidebar-footer">
+                <div style="color: var(--purple-l); font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">✨ Define
+                    Your Masar</div>
+                <span style="opacity: 0.6; font-size: 0.75rem;">Masar v2.0</span>
+            </div>
+        </nav>
+        <main class="main">
+            <div class="main-inner">
+
+                <div class="page-header-row fade-up">
+                    <div class="page-header fade-up">
+                        <div class="page-title" data-i18n="diet">Diet Plan</div>
+                        <p class="page-subtitle" data-i18n="diet_sub">Swap meals to hit your macros — 30-day schedule
+                        </p>
+                        </p>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-ghost btn-sm" onclick="regenDay()">↻ Regenerate Day</button>
+                        <a href="shopping.html" class="btn btn-cyan btn-sm" onclick="buildShop()">🛒 Shopping</a>
+                    </div>
+                </div>
+
+                <div id="empty" class="card empty-state fade-up-2">
+                    <span class="empty-icon">🗓</span>
+                    <div class="empty-text">Calculate your stats first to generate your 30-day meal plan.</div>
+                    <div class="empty-action"><a href="stats.html" class="btn btn-primary">⚡ Setup Stats →</a></div>
+                </div>
+
+                <div id="diet-wrap" style="display:none" class="fade-up-2">
+                    <div class="card" style="margin-bottom:14px">
+                        <div class="day-nav">
+                            <button class="dnav-btn" onclick="chgDay(-1)">◀</button>
+                            <div class="dnav-info">
+                                <div class="dnav-day" id="d-num">Day 1</div>
+                                <div class="fc-name" data-i18n="regen_day">Regenerate Day</div>
+                            </div>
+                            <button class="dnav-btn" onclick="chgDay(1)">▶</button>
+                        </div>
+                        <div class="week-tabs" id="d-week-tabs"></div>
+                        <div class="day-pills" id="d-day-pills"></div>
+                        <div class="dsum" id="dsum-bar" style="margin-top:14px"></div>
+                    </div>
+                    <div id="meal-list"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="shared-animations.js"></script>
+    <script>
+        // Check authentication - redirect to login if not logged in
+        const token = localStorage.getItem('masar_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Fetch latest data from server before checking auth state
+        fetchAndSaveState().then(() => {
+            const S = loadState();
+            if (!S.user) {
+                window.location.href = 'login.html';
+            }
+
+            setActiveNav();
+            applyTranslations();
+            lucide.createIcons();
+
+            // Update auth link if logged in
+            if (S.user) {
+                const authLink = document.getElementById('auth-link');
+                if (authLink) {
+                    authLink.innerHTML = '<i data-lucide="log-out"></i><span class="nav-label" data-i18n="logout">Logout</span>';
+                    authLink.href = '#';
+                    authLink.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('masar_token');
+                        localStorage.removeItem('masar_user');
+                        location.href = 'login.html';
+                    };
+                }
+            }
+
+            if (!S.tdee) location.href = 'stats.html';
+            if (!S.plan || S.plan.length < 30) {
+                S.plan = Array.from({ length: 30 }, () => genDay());
+                saveState(S);
+            }
+
+            let curD = S.curDay || 0;
+
+            if (S.plan && S.plan.length >= 30) {
+                document.getElementById('empty').style.display = 'none';
+                document.getElementById('diet-wrap').style.display = 'block';
+                renderDay(curD);
+            } else {
+                document.getElementById('empty').style.display = 'flex';
+                document.getElementById('diet-wrap').style.display = 'none';
+            }
+
+            function buildWeekTabs() {
+                const wt = document.getElementById('d-week-tabs'); wt.innerHTML = '';
+                for (let w = 0; w < 4; w++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'week-tab' + (Math.floor(curD / 7) === w ? ' wt-active' : '');
+                    btn.textContent = t('week_x', { x: w + 1 });
+                    btn.onclick = () => renderDay(w * 7);
+                    wt.appendChild(btn);
+                }
+            }
+
+            function buildDayPills(cur) {
+                const pills = document.getElementById('d-day-pills'), start = Math.floor(cur / 7) * 7;
+                const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                pills.innerHTML = '';
+                for (let d = 0; d < 7; d++) {
+                    const idx = start + d;
+                    const pill = document.createElement('div');
+                    pill.className = 'day-pill' + (idx === cur ? ' dp-active' : idx < cur ? ' dp-done' : '');
+                    pill.innerHTML = `<div class="dp-num">${idx + 1}</div><div class="dp-lbl">${t(DAYS[d])}</div>`;
+                    pill.onclick = () => renderDay(idx);
+                    pills.appendChild(pill);
+                }
+            }
+
+            function renderDay(idx) {
+                curD = idx; S.curDay = idx; saveState(S);
+                const day = S.plan[idx];
+                document.getElementById('d-num').textContent = t('day_x_of_30', { x: idx + 1 });
+                buildWeekTabs(); buildDayPills(idx);
+
+                const tdee = S.tdee;
+                let tp = 0, tc = 0, tf = 0;
+                MT.forEach(m => {
+                    const f = day[m.id], targetCal = Math.round(tdee * m.pct);
+                    const itemCal = (f.p * 4) + (f.c * 4) + (f.f * 9);
+                    const sc = targetCal / itemCal;
+                    tp += Math.round(f.p * sc); tc += Math.round(f.c * sc); tf += Math.round(f.f * sc);
+                });
+
+                document.getElementById('dsum-bar').innerHTML = `
+                <div class="ds"><div class="ds-v">${Math.round(tdee)}</div><div class="ds-l">${t('daily_calories')}</div></div>
+                <div class="ds"><div class="ds-v">${tp}g</div><div class="ds-l">${t('protein')}</div></div>
+                <div class="ds"><div class="ds-v">${tc}g</div><div class="ds-l">${t('carbs')}</div></div>
+                <div class="ds"><div class="ds-v">${tf}g</div><div class="ds-l">${t('fats')}</div></div>
+            `;
+
+                const ml = document.getElementById('meal-list'); ml.innerHTML = '';
+                const mealClass = { breakfast: 'meal-b', lunch: 'meal-l', snack: 'meal-s', dinner: 'meal-d' };
+                MT.forEach(m => {
+                    const f = day[m.id], targetCal = Math.round(tdee * m.pct);
+                    const itemCal = (f.p * 4) + (f.c * 4) + (f.f * 9);
+                    const sc = targetCal / itemCal;
+                    const mc = document.createElement('div');
+                    mc.className = `meal-card ${mealClass[m.id] || ''}`;
+                    mc.id = 'mc-' + m.id;
+
+                    let componentsHtml = '';
+                    if (f.components) {
+                        componentsHtml = `
+                        <div class="meal-components">
+                            <div class="comp-title">${t('ingredients')}</div>
+                            ${f.components.map(comp => `
+                                <div class="comp-i">
+                                    <div class="comp-n"><span class="comp-dot"></span>${t(comp.n)}</div>
+                                    <div class="comp-q">${Math.round(comp.q * sc * 10) / 10} ${t(comp.u)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    }
+
+                    mc.innerHTML = `
+                    <div class="meal-card-top">
+                        <div class="meal-type-lbl"><i data-lucide="${m.icon}" style="width:14px;height:14px"></i> ${t(m.lbl)}</div>
+                        <div class="meal-meta"><span class="meal-kcal">${targetCal} kcal</span><button class="swap-btn" onclick="swapMeal('${m.id}')">⇄ ${t('swap')}</button></div>
+                    </div>
+                    <div class="meal-time"><i data-lucide="clock" style="width:12px;height:12px"></i> ${m.time}</div>
+                    <div class="meal-name">${f.e} ${t(f.n)}</div>
+                    <div class="meal-macros">
+                        <div class="macro-i">🏋️ <b>${Math.round(f.p * sc)}g</b></div>
+                        <div class="macro-i">🌾 <b>${Math.round(f.c * sc)}g</b></div>
+                        <div class="macro-i">🫒 <b>${Math.round(f.f * sc)}g</b></div>
+                    </div>
+                    ${componentsHtml}
+                `;
+                    ml.appendChild(mc);
+                });
+                lucide.createIcons();
+            }
+
+            window.chgDay = d => { const n = curD + d; if (n >= 0 && n < 30) renderDay(n); };
+            window.swapMeal = id => {
+                const opts = FOODS[id], cur = S.plan[curD][id];
+                let nxt = cur; while (nxt.n === cur.n && opts.length > 1) nxt = { ...opts[Math.floor(Math.random() * opts.length)] };
+                S.plan[curD][id] = nxt; saveState(S);
+                renderDay(curD);
+                showToast(t('meal_swapped'));
+            };
+            window.regenDay = () => {
+                S.plan[curD] = genDay();
+                saveState(S);
+                renderDay(curD);
+                showToast(t('day_regenerated'));
+            };
+
+
+            // renderDay is now called within the visibility check at the top
+        });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="shared-animations.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+{
+  "name": "masar-gym-app",
+  "version": "1.0.0",
+  "description": "Masar Gym App - PWA for fitness tracking",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node server.js",
+    "build": "echo 'No build step required for this project'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.7.8",
+    "@capacitor/app": "^5.0.8",
+    "@capacitor/cli": "^5.7.8",
+    "@capacitor/core": "^5.7.8",
+    "@codetrix-studio/capacitor-google-auth": "^3.3.6",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fs-extra": "^11.2.0",
+    "google-auth-library": "^10.5.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^6.21.0",
+    "nodemailer": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "vercel": {
+    "rewrites": [
+      {
+        "source": "/api/(.*)",
+        "destination": "/api/index.js"
+      }
+    ]
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
+}

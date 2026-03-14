@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masar — Shopping</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .sh-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(6, 182, 212, .04);
+            border: 1px solid rgba(6, 182, 212, .12);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 22px
+        }
+
+        .sh-prog-text {
+            font-size: .82rem;
+            color: var(--text-2)
+        }
+
+        .sh-prog-text strong {
+            color: #22d3ee;
+            font-family: 'Outfit', sans-serif;
+            font-size: .95rem
+        }
+
+        .sh-cat {
+            background: var(--glass);
+            border: 1px solid var(--border2);
+            border-radius: var(--r);
+            padding: 20px;
+            margin-bottom: 12px
+        }
+
+        .sh-cat-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            cursor: pointer
+        }
+
+        .sh-cat-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: .92rem;
+            font-weight: 700;
+            color: var(--text)
+        }
+
+        .sh-cat-count {
+            font-size: .7rem;
+            color: var(--text-3);
+            background: rgba(255, 255, 255, .05);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border2)
+        }
+
+        .sh-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .sh-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent
+        }
+
+        .sh-item:hover {
+            background: rgba(124, 58, 237, .05);
+            border-color: var(--border2)
+        }
+
+        .sh-item.done {
+            opacity: .42
+        }
+
+        .sh-item.done .sh-name {
+            text-decoration: line-through;
+            color: var(--text-3)
+        }
+
+        /* .sh-check removed: replaced by .modern-checkbox in shared.css */
+
+        .sh-name {
+            font-size: .85rem;
+            color: var(--text-2);
+            transition: var(--transition)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="dumbbell" style="color:#fff;width:22px;height:22px"></i>
+                </div><span class="logo-text">Masar</span>
+            </div>
+            <div class="nav-section-label" data-i18n="main">Main</div>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i><span class="nav-label"
+                    data-i18n="dashboard">Dashboard</span></a>
+            <a href="stats.html" class="nav-item"><i data-lucide="zap"></i><span class="nav-label"
+                    data-i18n="stats">Stats</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="tools">Tools</div>
+            <a href="diet.html" class="nav-item"><i data-lucide="utensils"></i><span class="nav-label"
+                    data-i18n="diet">Diet Plan</span></a>
+            <a href="workout.html" class="nav-item"><i data-lucide="dumbbell"></i><span class="nav-label"
+                    data-i18n="workout">Workout</span></a>
+            <a href="progress.html" class="nav-item"><i data-lucide="trending-up"></i><span class="nav-label"
+                    data-i18n="progress">Progress</span></a>
+            <a href="shopping.html" class="nav-item active"><i data-lucide="shopping-cart"></i><span class="nav-label"
+                    data-i18n="shopping">Shopping</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="account">Account</div>
+            <a href="settings.html" class="nav-item"><i data-lucide="settings"></i><span class="nav-label"
+                    data-i18n="settings">Settings</span></a>
+            <a href="login.html" id="auth-link" class="nav-item"><i data-lucide="log-in"></i><span class="nav-label"
+                    data-i18n="login">Login</span></a>
+
+            <div class="sidebar-footer">
+                <div style="color: var(--purple-l); font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">✨ Define
+                    Your Masar</div>
+                <span style="opacity: 0.6; font-size: 0.75rem;">Masar v2.0</span>
+            </div>
+        </nav>
+        <main class="main">
+            <div class="main-inner">
+
+                <div class="page-header-row fade-up">
+                    <div class="page-header fade-up">
+                        <div class="page-title" data-i18n="shopping">Shopping List</div>
+                        <p class="page-subtitle" data-i18n="items_checked" data-i18n-vars='{"x": 0, "y": 0}'
+                            id="list-status">0 of 0 items checked</p>
+                    </div>
+                    <button class="reset-btn" onclick="resetList()" data-i18n="reset">Reset List</button>
+                </div>
+
+                <div class="sh-top fade-up-2">
+                    <div class="stat-icon-box" style="margin:0"><i data-lucide="shopping-cart"
+                            class="icon-glow-cyan"></i></div>
+                    <div style="flex:1">
+                        <div class="sh-prog-text" style="margin-bottom:6px"><strong id="sh-done">0</strong> of <strong
+                                id="sh-total">0</strong> items checked</div>
+                        <div class="prog-bar-wrap">
+                            <div class="prog-bar" id="sh-bar" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="shop-list" class="fade-up-3"></div>
+
+            </div>
+        </main>
+    </div>
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="shared-animations.js"></script>
+    <script>
+        // Check authentication - redirect to login if not logged in
+        const token = localStorage.getItem('masar_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Fetch latest data from server before checking auth state
+        fetchAndSaveState().then(() => {
+            const S = loadState();
+            if (!S.user) {
+                window.location.href = 'login.html';
+            }
+
+            setActiveNav();
+            applyTranslations();
+            lucide.createIcons();
+
+            // Update auth link if logged in
+            if (S.user) {
+                const authLink = document.getElementById('auth-link');
+                if (authLink) {
+                    authLink.innerHTML = '<i data-lucide="log-out"></i><span class="nav-label" data-i18n="logout">Logout</span>';
+                    authLink.href = '#';
+                    authLink.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('masar_token');
+                        localStorage.removeItem('masar_user');
+                        location.href = 'login.html';
+                    };
+                }
+            }
+            if (!S.shopChk) S.shopChk = {};
+            render();
+
+            function render() {
+                const list = document.getElementById('shop-list');
+                list.innerHTML = '';
+                let total = 0, done = 0;
+
+                SHOP_CATS.forEach(cat => {
+                    const section = document.createElement('div');
+                    section.className = 'sh-section';
+                    section.innerHTML = `
+                    <div class="sh-cat-header">
+                        <i data-lucide="${cat.icon}" class="icon-glow-purple" style="width:18px;height:18px"></i>
+                        <span class="sh-cat-title">${t(cat.title)}</span>
+                    </div>
+                `;
+                    const itemsDiv = document.createElement('div');
+                    itemsDiv.className = 'sh-items';
+                    cat.items.forEach(itemKey => {
+                        total++;
+                        const isChecked = S.shopChk[itemKey] || false;
+                        if (isChecked) done++;
+                        const div = document.createElement('div');
+                        div.className = 'sh-item' + (isChecked ? ' done' : '');
+                        div.innerHTML = `
+                        <input type="checkbox" class="modern-checkbox" ${isChecked ? 'checked' : ''} onchange="toggle('${itemKey}')">
+                        <span class="sh-name">${t(itemKey)}</span>
+                    `;
+                        itemsDiv.appendChild(div);
+                    });
+                    section.appendChild(itemsDiv);
+                    list.appendChild(section);
+                });
+
+                lucide.createIcons();
+                document.getElementById('sh-done').textContent = done;
+                document.getElementById('sh-total').textContent = total;
+
+                const statusEl = document.getElementById('list-status');
+                statusEl.textContent = t('items_checked', { x: done, y: total });
+
+                document.getElementById('sh-bar').style.width = total ? ((done / total) * 100).toFixed(1) + '%' : '0%';
+            }
+
+            window.toggle = key => {
+                S.shopChk[key] = !S.shopChk[key];
+                saveState(S);
+                render();
+            }
+
+            window.resetList = () => {
+                S.shopChk = {};
+                saveState(S);
+                render();
+                showToast(t('reset_list'));
+            };
+
+            render();
+        });
+    </script>
+</body>
+
+</html>

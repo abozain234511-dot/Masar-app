@@ -1,0 +1,12 @@
+{
+    "appId": "com.masar.gym",
+    "appName": "Masar Gym",
+    "webDir": "www",
+    "cordova": {},
+    "android": {
+        "allowMixedContent": true
+    },
+    "server": {
+        "androidScheme": "https"
+    }
+}

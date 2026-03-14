@@ -1,0 +1,31 @@
+{
+    "name": "Masar - Gym Fitness App",
+    "short_name": "Masar",
+    "description": "Your personal fitness companion for workouts, diet, and progress tracking",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#8b5cf6",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "./icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "categories": [
+        "fitness",
+        "health",
+        "lifestyle"
+    ],
+    "lang": "en",
+    "dir": "ltr"
+}

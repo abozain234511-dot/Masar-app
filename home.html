@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masar — Ultimate Edition</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            background: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 28px 16px 60px;
+            font-family: 'Outfit', 'Inter', sans-serif;
+            color: #fff
+        }
+
+        .container {
+            background: #0a0a0a;
+            border-radius: 24px;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.82);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden
+        }
+
+        .tab-bar {
+            display: flex;
+            background: #0d0d0d;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+            overflow-x: auto;
+            scrollbar-width: none
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 55px;
+            padding: 10px 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #52525b;
+            font-size: .58rem;
+            cursor: pointer;
+            transition: .3s;
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            border-radius: 0;
+            width: auto;
+            letter-spacing: .5px
+        }
+
+        .tab-btn .ti {
+            font-size: 1rem
+        }
+
+        .tab-btn:hover {
+            color: #a78bfa;
+            background: rgba(124, 58, 237, .05)
+        }
+
+        .tab-btn.act {
+            color: #ffffff;
+            border-bottom-color: #7c3aed
+        }
+
+        .tab-pane {
+            display: none;
+            padding: 22px
+        }
+
+        .tab-pane.act {
+            display: block
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            letter-spacing: 3px;
+            margin: 0 0 22px;
+            font-size: 1.3rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+        }
+
+        .stitle {
+            color: #a78bfa;
+            font-size: .88rem;
+            text-align: center;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px
+        }
+
+        /* INPUT */
+        .ni {
+            position: relative;
+            width: 100%;
+            margin: 22px 0
+        }
+
+        .ni .inp {
+            width: 100%;
+            padding: 13px;
+            border: 1.5px solid #27272a;
+            background: #0d0d0d;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            border-radius: 8px;
+            transition: .4s;
+            box-sizing: border-box
+        }
+
+        .ni .lbl {
+            position: absolute;
+            inset-inline-start: 13px;
+            top: 13px;
+            pointer-events: none;
+            color: #52525b;
+            transition: .4s;
+            background: #0d0d0d;
+            padding: 0 4px;
+            font-size: 14px
+        }
+
+        .ni .inp:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, .2)
+        }
+
+        .ni .inp:focus~.lbl,
+        .ni .inp:not(:placeholder-shown)~.lbl {
+            transform: translateY(-23px);
+            font-size: 11px;
+            color: #d18cff;
+            inset-inline-start: 10px
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield
+        }
+
+        /* SELECT */
+        .ns {
+            position: relative;
+            width: 100%;
+            margin: 22px 0;
+            user-select: none
+        }
+
+        .ns-trigger {
+            width: 100%;
+            padding: 13px;
+            border: 1.5px solid #27272a;
+            background: #0d0d0d;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: .4s
+        }
+
+        .ns.open .ns-trigger {
+            border-color: #7c3aed;
+            box-shadow: 0 0 15px rgba(124, 58, 237, .15)
+        }
+
+        .ns-opts {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background: #050518;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            display: none;
+            z-index: 100;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .8)
+        }
+
+        .ns-opt {
+            padding: 11px 13px;
+            color: #6a6a8a;
+            cursor: pointer;
+            transition: .3s;
+            font-size: .88rem
+        }
+
+        .ns-opt:hover,
+        .ns-opt.chosen {
+            background: #1a1a2e;
+            color: #d18cff
+        }
+
+        .arr {
+            font-size: 10px;
+            color: #b56aff;
+            transition: .3s
+        }
+
+        .ns.open .ns-opts {
+            display: block
+        }
+
+        .ns.open .arr {
+            transform: rotate(180deg)
+        }
+
+        /* BUTTON */
+        button {
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            border: 1.5px solid #7c3aed;
+            color: #a78bfa;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .3s;
+            text-transform: uppercase;
+            font-family: 'Outfit', sans-serif;
+            font-size: .78rem;
+            letter-spacing: 1px
+        }
+
+        button:hover {
+            background: #7c3aed;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(124, 58, 237, .3)
+        }
+
+        .btn-c {
+            border-color: #06b6d4;
+            color: #06b6d4;
+            margin-top: 10px
+        }
+
+        .btn-c:hover {
+            background: #06b6d4;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(6, 182, 212, .3)
+        }
+
+        .btn-sm {
+            border-color: #2a2a3a;
+            color: #6a6a8a;
+            margin-top: 8px;
+            font-size: .67rem;
+            padding: 9px;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0
+        }
+
+        .btn-sm:hover {
+            border-color: #d18cff;
+            color: #d18cff;
+            background: rgba(209, 140, 255, .05);
+            box-shadow: none
+        }
+
+        .btn-del {
+            border-color: #ff6d6d22;
+            color: #ff6d6d66;
+            font-size: .6rem;
+            padding: 3px 7px;
+            width: auto;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400
+        }
+
+        .btn-del:hover {
+            border-color: #ff6d6d;
+            color: #ff6d6d;
+            box-shadow: none;
+            background: rgba(255, 109, 109, .05)
+        }
+
+        /* RESULTS */
+        #results {
+            margin-top: 18px;
+            display: none;
+            border-top: 1px solid #1a1a2e;
+            padding-top: 16px
+        }
+
+        .rr {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: .86rem
+        }
+
+        .rv {
+            color: #22d3ee;
+            font-weight: 700
+        }
+
+        .rv-big {
+            color: #c4b5fd;
+            font-weight: 700;
+            font-size: 1.05rem
+        }
+
+        .gtag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: .65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        .gt-l {
+            background: rgba(6, 182, 212, .1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, .2)
+        }
+
+        .gt-g {
+            background: rgba(209, 140, 255, .1);
+            color: #d18cff;
+            border: 1px solid #d18cff44
+        }
+
+        .gt-m {
+            background: rgba(181, 106, 255, .1);
+            color: #b56aff;
+            border: 1px solid #b56aff44
+        }
+
+        .wcard {
+            background: rgba(109, 242, 255, .04);
+            border: 1px solid #6df2ff22;
+            border-radius: 10px;
+            padding: 11px 14px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .wval {
+            color: #6df2ff;
+            font-weight: 700;
+            font-size: .95rem
+        }
+
+        .wsub {
+            color: #6a6a8a;
+            font-size: .73rem
+        }
+
+        /* DIET/WORKOUT NAV */
+        .mnav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 8px
+        }
+
+        .narr {
+            width: auto;
+            padding: 7px 13px;
+            border: 1px solid #27272a;
+            color: #a78bfa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .3s;
+            background: transparent;
+            flex-shrink: 0;
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0
+        }
+
+        .narr:hover {
+            background: rgba(181, 106, 255, .1);
+            border-color: #b56aff;
+            box-shadow: none;
+            color: #d18cff
+        }
+
+        .ddisp {
+            text-align: center;
+            flex: 1
+        }
+
+        .dlbl {
+            color: #22d3ee;
+            font-size: .95rem;
+            font-weight: 700;
+            letter-spacing: 1px
+        }
+
+        .dsub {
+            color: #71717a;
+            font-size: .67rem;
+            margin-top: 2px
+        }
+
+        .ddots {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 12px;
+            padding: 7px;
+            background: rgba(26, 26, 46, .3);
+            border-radius: 10px
+        }
+
+        .ddot {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #2a2a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .54rem;
+            color: #4a4a6a;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .ddot:hover {
+            border-color: #b56aff;
+            color: #b56aff
+        }
+
+        .ddot.act {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            color: #fff;
+            font-weight: 700
+        }
+
+        .ddot.vis {
+            border-color: #6df2ff33;
+            color: #6df2ff66
+        }
+
+        /* DIET */
+        .dsum {
+            background: rgba(181, 106, 255, .05);
+            border: 1px solid #1a1a2e;
+            border-radius: 10px;
+            padding: 9px 13px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center
+        }
+
+        .si {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .sv {
+            color: #a78bfa;
+            font-weight: 700;
+            font-size: .85rem
+        }
+
+        .sl {
+            color: #4a4a6a;
+            font-size: .57rem;
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        #meal-list {
+            animation: fadeIn .4s ease-out
+        }
+
+        .mc {
+            background: rgba(26, 26, 46, .5);
+            border: 1px solid #2a2a3a;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 9px;
+            transition: .3s
+        }
+
+        .mc:hover {
+            border-color: #b56aff;
+            transform: translateY(-2px)
+        }
+
+        .mt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px
+        }
+
+        .mlbl {
+            color: #b56aff;
+            font-weight: 700;
+            font-size: .78rem;
+            display: flex;
+            align-items: center;
+            gap: 4px
+        }
+
+        .mtime {
+            color: #4a4a6a;
+            font-size: .64rem;
+            margin-bottom: 4px
+        }
+
+        .mcal {
+            color: #06b6d4;
+            font-size: .78rem;
+            font-weight: 700
+        }
+
+        .mname {
+            color: #c0c0d8;
+            font-size: .78rem;
+            line-height: 1.4;
+            margin-bottom: 5px
+        }
+
+        .mmac {
+            display: flex;
+            gap: 7px;
+            font-size: .65rem;
+            color: #5a5a7a
+        }
+
+        .mac {
+            display: flex;
+            align-items: center;
+            gap: 2px
+        }
+
+        .mac span {
+            color: #7a7a9a
+        }
+
+        .sbtn {
+            width: auto;
+            padding: 3px 8px;
+            border: 1px solid #2a2a3a;
+            color: #6df2ff;
+            border-radius: 5px;
+            font-size: .62rem;
+            cursor: pointer;
+            transition: .3s;
+            background: transparent;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400
+        }
+
+        .sbtn:hover {
+            background: rgba(109, 242, 255, .08);
+            border-color: #6df2ff;
+            box-shadow: none
+        }
+
+        /* WORKOUT */
+        .wkcard {
+            background: rgba(26, 26, 46, .5);
+            border: 1px solid #2a2a3a;
+            border-radius: 12px;
+            padding: 13px;
+            margin-bottom: 9px
+        }
+
+        .wkcard.tc {
+            border-color: #6df2ff33
+        }
+
+        .wkcard.tp {
+            border-color: #d18cff33
+        }
+
+        .wkcard.th {
+            border-color: #ff9a6d33
+        }
+
+        .wkh {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px
+        }
+
+        .wkt {
+            color: #d18cff;
+            font-weight: 700;
+            font-size: .85rem
+        }
+
+        .wkb {
+            padding: 2px 9px;
+            border-radius: 20px;
+            font-size: .6rem;
+            font-weight: 700;
+            text-transform: uppercase
+        }
+
+        .bc {
+            background: rgba(109, 242, 255, .1);
+            color: #6df2ff
+        }
+
+        .bp {
+            background: rgba(209, 140, 255, .1);
+            color: #d18cff
+        }
+
+        .bh {
+            background: rgba(255, 154, 109, .1);
+            color: #ff9a6d
+        }
+
+        .br {
+            background: rgba(255, 255, 255, .05);
+            color: #4a4a6a
+        }
+
+        .wkd {
+            color: #5a5a7a;
+            font-size: .7rem;
+            margin-bottom: 9px
+        }
+
+        .exrow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 9px;
+            background: rgba(0, 0, 15, .4);
+            border-radius: 6px;
+            border: 1px solid #1a1a2e;
+            margin-bottom: 5px
+        }
+
+        .exn {
+            color: #c0c0d8;
+            font-size: .75rem
+        }
+
+        .exd {
+            color: #6df2ff;
+            font-size: .68rem;
+            text-align: right
+        }
+
+        /* PROGRESS */
+        .pform {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 14px
+        }
+
+        .pinp {
+            flex: 1;
+            padding: 9px 11px;
+            border: 1px solid #2a2a3a;
+            background: #00000f;
+            color: #fff;
+            border-radius: 8px;
+            font-size: .82rem;
+            outline: none;
+            transition: .3s
+        }
+
+        .pinp:focus {
+            border-color: #b56aff;
+            box-shadow: 0 0 10px rgba(181, 106, 255, .2)
+        }
+
+        .pinp::placeholder {
+            color: #4a4a6a
+        }
+
+        .addbtn {
+            width: auto;
+            padding: 9px 13px;
+            flex-shrink: 0;
+            font-size: .75rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .3s;
+            text-transform: none;
+            letter-spacing: 0
+        }
+
+        .pstats {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 12px
+        }
+
+        .pst {
+            flex: 1;
+            background: rgba(26, 26, 46, .4);
+            border: 1px solid #1a1a2e;
+            border-radius: 8px;
+            padding: 9px;
+            text-align: center
+        }
+
+        .pst-v {
+            color: #d18cff;
+            font-size: .9rem;
+            font-weight: 700
+        }
+
+        .pst-l {
+            color: #4a4a6a;
+            font-size: .57rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-top: 2px
+        }
+
+        .pchart {
+            background: rgba(26, 26, 46, .3);
+            border: 1px solid #1a1a2e;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px
+        }
+
+        .ctitle {
+            color: #6a6a8a;
+            font-size: .64rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px
+        }
+
+        .cbars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 55px
+        }
+
+        .cbar-w {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px
+        }
+
+        .cbar {
+            width: 100%;
+            background: linear-gradient(to top, #7c3aed, #06b6d4);
+            border-radius: 3px 3px 0 0;
+            min-height: 3px;
+            transition: height .5s
+        }
+
+        .cbar-l {
+            color: #4a4a6a;
+            font-size: .5rem
+        }
+
+        .pentry {
+            background: rgba(26, 26, 46, .4);
+            border: 1px solid #1a1a2e;
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn .3s
+        }
+
+        .pe-l {
+            display: flex;
+            flex-direction: column;
+            gap: 1px
+        }
+
+        .pe-date {
+            color: #6a6a8a;
+            font-size: .66rem
+        }
+
+        .pe-w {
+            color: #fff;
+            font-size: .95rem;
+            font-weight: 700
+        }
+
+        .pe-d {
+            font-size: .7rem;
+            font-weight: 700
+        }
+
+        .dup {
+            color: #ff9a6d
+        }
+
+        .ddn {
+            color: #6df2ff
+        }
+
+        .dsm {
+            color: #6a6a8a
+        }
+
+        /* SHOPPING */
+        .shopcat {
+            margin-bottom: 14px
+        }
+
+        .shopcat-t {
+            color: #b56aff;
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .shopitem {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .shopitem:hover {
+            background: rgba(181, 106, 255, .05)
+        }
+
+        .schk {
+            width: 15px;
+            height: 15px;
+            border: 1.5px solid #2a2a3a;
+            border-radius: 3px;
+            flex-shrink: 0;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .65rem
+        }
+
+        .shopitem.chk .schk {
+            background: #b56aff;
+            border-color: #b56aff
+        }
+
+        .shopitem.chk .sname {
+            color: #4a4a6a;
+            text-decoration: line-through
+        }
+
+        .sname {
+            color: #c0c0d8;
+            font-size: .8rem;
+            flex: 1
+        }
+
+        .sqty {
+            color: #6a6a8a;
+            font-size: .67rem
+        }
+
+        /* EMPTY STATE */
+        .empty {
+            text-align: center;
+            padding: 28px 16px;
+            color: #3a3a5a
+        }
+
+        .empty-i {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            opacity: .5
+        }
+
+        .empty-t {
+            font-size: .82rem;
+            line-height: 1.5
+        }
+    </style>
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- TAB BAR -->
+        <div class="tab-bar">
+            <button class="tab-btn act" onclick="showTab('calc')"><span class="ti">⚡</span><span
+                    data-i18n="stats">Stats</span></button>
+            <button class="tab-btn" onclick="showTab('diet')"><span class="ti">🗓</span><span
+                    data-i18n="diet">Diet</span></button>
+            <button class="tab-btn" onclick="showTab('workout')"><span class="ti">🏋️</span><span
+                    data-i18n="workout">Workout</span></button>
+            <button class="tab-btn" onclick="showTab('progress')"><span class="ti">📈</span><span
+                    data-i18n="progress">Progress</span></button>
+            <button class="tab-btn" onclick="showTab('shopping')"><span class="ti">🛒</span><span
+                    data-i18n="shopping">Shop</span></button>
+        </div>
+
+        <!-- CALC TAB -->
+        <div id="tab-calc" class="tab-pane act">
+            <h1 data-i18n="ultimate_edition">Masar — Ultimate</h1>
+            <div class="ni"><input type="number" id="weight" class="inp" placeholder=" "><label class="lbl"
+                    data-i18n="weight">Weight (kg)</label></div>
+            <div class="ni"><input type="number" id="height" class="inp" placeholder=" "><label class="lbl"
+                    data-i18n="height">Height (cm)</label></div>
+            <div class="ni"><input type="number" id="age" class="inp" placeholder=" "><label class="lbl"
+                    data-i18n="age">Age</label></div>
+            <div class="ns" id="gsel">
+                <div class="ns-trigger" onclick="toggleSel('gsel')"><span id="glbl">Male</span><span
+                        class="arr">▼</span></div>
+                <div class="ns-opts">
+                    <div class="ns-opt chosen" onclick="setSel('gsel','gender','M','Male',this)">Male</div>
+                    <div class="ns-opt" onclick="setSel('gsel','gender','F','Female',this)">Female</div>
+                </div>
+                <input type="hidden" id="gender" value="M">
+            </div>
+            <div class="ns" id="asel">
+                <div class="ns-trigger" onclick="toggleSel('asel')"><span id="albl">Lightly Active</span><span
+                        class="arr">▼</span></div>
+                <div class="ns-opts">
+                    <div class="ns-opt" onclick="setSel('asel','activity','1.2','Sedentary',this)">Sedentary (desk job)
+                    </div>
+                    <div class="ns-opt chosen" onclick="setSel('asel','activity','1.375','Lightly Active',this)">Lightly
+                        Active (1-3×/wk)</div>
+                    <div class="ns-opt" onclick="setSel('asel','activity','1.55','Moderately Active',this)">Moderately
+                        Active (3-5×/wk)</div>
+                    <div class="ns-opt" onclick="setSel('asel','activity','1.725','Very Active',this)">Very Active
+                        (6-7×/wk)</div>
+                    <div class="ns-opt" onclick="setSel('asel','activity','1.9','Athlete',this)">Athlete / Intense daily
+                    </div>
+                </div>
+                <input type="hidden" id="activity" value="1.375">
+            </div>
+            <div class="ns" id="goalsel">
+                <div class="ns-trigger" onclick="toggleSel('goalsel')"><span id="goallbl">⚖️ Maintenance</span><span
+                        class="arr">▼</span></div>
+                <div class="ns-opts">
+                    <div class="ns-opt" onclick="setSel('goalsel','goal','loss','🔻 Weight Loss',this)">🔻 Weight Loss
+                        (−500 kcal)</div>
+                    <div class="ns-opt chosen" onclick="setSel('goalsel','goal','maintain','⚖️ Maintenance',this)">⚖️
+                        Maintenance</div>
+                    <div class="ns-opt" onclick="setSel('goalsel','goal','gain','💪 Muscle Gain',this)">💪 Muscle Gain
+                        (+300 kcal)</div>
+                </div>
+                <input type="hidden" id="goal" value="maintain">
+            </div>
+            <button onclick="calculate()" data-i18n="calculate_stats">Calculate Stats</button>
+            <div id="results">
+                <div class="rr"><span data-i18n="bmr">Base Metabolic Rate</span><span class="rv" id="res-bmr">—</span>
+                </div>
+                <div class="rr" style="margin-bottom:12px"><span data-i18n="daily_calories_target">Target Daily
+                        Calories</span><span class="rv-big" id="res-cal">—</span></div>
+                <div class="rr"><span data-i18n="protein">Protein</span><span class="rv" id="res-prot">—</span></div>
+                <div class="rr"><span data-i18n="carbs">Carbs</span><span class="rv" id="res-carb">—</span></div>
+                <div class="rr" style="margin-bottom:12px"><span data-i18n="fats">Fats</span><span class="rv"
+                        id="res-fat">—</span></div>
+                <div class="rr"><span data-i18n="goal">Goal</span><span id="goal-tag"></span></div>
+                <div class="wcard"><span style="font-size:1.4rem">💧</span>
+                    <div>
+                        <div class="wval" id="res-water">—</div>
+                        <div class="wsub" data-i18n="daily_water_intake">Daily water intake</div>
+                    </div>
+                </div>
+                <button class="btn-c" onclick="initDiet();showTab('diet')" data-i18n="gen_diet">Generate Monthly Diet
+                    Plan ✨</button>
+                <button class="btn-sm" onclick="initWorkout();showTab('workout')" data-i18n="gen_workout">Generate
+                    Workout Plan 🏋️</button>
+            </div>
+        </div>
+
+        <!-- DIET TAB -->
+        <div id="tab-diet" class="tab-pane">
+            <div id="d-empty" class="empty">
+                <div class="empty-i">🗓</div>
+                <div class="empty-t" data-i18n="calc_first_diet">Calculate your stats first,<br>then generate a diet
+                    plan.</div>
+            </div>
+            <div id="d-plan" style="display:none">
+                <div class="stitle" data-i18n="monthly_diet">Monthly Nebula Diet</div>
+                <div class="mnav">
+                    <button class="narr" onclick="chgDay(-1)">◀</button>
+                    <div class="ddisp">
+                        <div class="dlbl" id="dlbl">Day 1</div>
+                        <div class="dsub" data-i18n="of_30">of 30</div>
+                    </div>
+                    <button class="narr" onclick="chgDay(1)">▶</button>
+                </div>
+                <div class="ddots" id="ddots"></div>
+                <div class="dsum" id="dsum"></div>
+                <div id="meal-list"></div>
+                <button class="btn-sm" onclick="regenDay()" data-i18n="regen_day">↻ Regenerate this day</button>
+                <button class="btn-c" style="margin-top:10px" onclick="buildShop();showTab('shopping')"
+                    data-i18n="shopping_list">🛒 Shopping List
+                    (Week 1)</button>
+            </div>
+        </div>
+
+        <!-- WORKOUT TAB -->
+        <div id="tab-workout" class="tab-pane">
+            <div id="wo-empty" class="empty">
+                <div class="empty-i">🏋️</div>
+                <div class="empty-t" data-i18n="calc_first_workout">Calculate your stats first,<br>then generate your
+                    workout plan.</div>
+            </div>
+            <div id="wo-plan" style="display:none">
+                <div class="stitle" id="wo-title" data-i18n="workout_plan">Workout Plan</div>
+                <div class="mnav">
+                    <button class="narr" onclick="chgWDay(-1)">◀</button>
+                    <div class="ddisp">
+                        <div class="dlbl" id="wdlbl">Day 1</div>
+                        <div class="dsub" data-i18n="of_30">of 30</div>
+                    </div>
+                    <button class="narr" onclick="chgWDay(1)">▶</button>
+                </div>
+                <div class="ddots" id="wdots"></div>
+                <div id="wo-content"></div>
+            </div>
+        </div>
+
+        <!-- PROGRESS TAB -->
+        <div id="tab-progress" class="tab-pane">
+            <div class="stitle" data-i18n="weight_progress">Weight Progress</div>
+            <div class="pchart">
+                <div class="ctitle" data-i18n="chart_last_7">Chart (last 7)</div>
+                <div id="chart-bars"></div>
+            </div>
+            <div id="pstats-row" class="pstats" style="display:none"></div>
+            <div class="pform">
+                <input type="number" id="pw" class="pinp" placeholder="Weight (kg)" data-i18n-placeholder="weight"
+                    step="0.1" min="20" max="300">
+                <input type="date" id="pd" class="pinp" style="max-width:128px;color-scheme:dark">
+                <button class="addbtn" onclick="addEntry()" data-i18n="add">+ Add</button>
+            </div>
+            <div id="plist"></div>
+            <div id="p-empty" class="empty">
+                <div class="empty-i">📊</div>
+                <div class="empty-t" data-i18n="log_weight_start">Log your weight to start<br>tracking your journey.
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOPPING TAB -->
+        <div id="tab-shopping" class="tab-pane">
+            <div id="sh-empty" class="empty">
+                <div class="empty-i">🛒</div>
+                <div class="empty-t" data-i18n="gen_diet_first_shop">Generate your diet plan first,<br>then get your
+                    shopping list here.</div>
+            </div>
+            <div id="sh-content" style="display:none">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                    <div class="stitle" style="margin:0" data-i18n="week_1_shop">Week 1 Shopping</div>
+                    <button class="btn-sm" style="width:auto;padding:5px 11px;margin:0" onclick="resetShop()"
+                        data-i18n="reset">Reset
+                        ✓</button>
+                </div>
+                <p style="color:#6a6a8a;font-size:.72rem;margin-bottom:14px" data-i18n="tap_items_check">Tap items to
+                    check off as you shop</p>
+                <div id="sh-cats"></div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // ── STATE & PERSISTENCE ──────────────────────────────────────────
+        let S = { tdee: 0, bmr: 0, goal: 'maintain', weight: 0, plan: [], curDay: 0, wplan: [], curWDay: 0, prog: [], shop: [], shopChk: {} };
+        const save = () => { saveState(S); };
+        const load = () => { S = loadState(); };
+
+        // ── TABS ─────────────────────────────────────────────────────────
+        function showTab(id) {
+            document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('act'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('act'));
+            document.getElementById('tab-' + id).classList.add('act');
+            document.querySelectorAll('.tab-btn').forEach(b => { if (b.getAttribute('onclick') === `showTab('${id}')`) b.classList.add('act'); });
+        }
+
+        // ── DROPDOWNS ────────────────────────────────────────────────────
+        function toggleSel(id) { const el = document.getElementById(id), was = el.classList.contains('open'); document.querySelectorAll('.ns.open').forEach(e => e.classList.remove('open')); if (!was) el.classList.add('open'); }
+        document.addEventListener('click', e => { if (!e.target.closest('.ns')) document.querySelectorAll('.ns.open').forEach(e => e.classList.remove('open')); });
+        function setSel(sid, iid, val, lbl, el) { document.getElementById(iid).value = val; document.getElementById(sid).querySelector('.ns-trigger span').innerText = lbl; document.getElementById(sid).querySelectorAll('.ns-opt').forEach(o => o.classList.remove('chosen')); el.classList.add('chosen'); document.getElementById(sid).classList.remove('open'); }
+
+        // ── INIT ─────────────────────────────────────────────────────────
+        window.onload = function () {
+            load();
+            applyTranslations();
+            document.getElementById('pd').value = new Date().toISOString().split('T')[0];
+            ['weight', 'height', 'age'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('keydown', e => { if (e.target.value.length >= 3 && e.key !== 'Backspace') e.preventDefault(); }); });
+            if (S.tdee > 0) showResults();
+            if (S.plan.length > 0) { document.getElementById('d-empty').style.display = 'none'; document.getElementById('d-plan').style.display = 'block'; buildDayDots(); renderDay(S.curDay); }
+            if (S.wplan.length > 0) {
+                document.getElementById('wo-empty').style.display = 'none';
+                document.getElementById('wo-plan').style.display = 'block';
+                const prg = WPRG[S.goal] || WPRG.maintain;
+                document.getElementById('wo-title').textContent = t(prg.i18nName) || prg.name;
+                buildWDots(); renderWDay(S.curWDay);
+            }
+            renderProgList(); updateChart();
+            if (S.shop.length > 0) renderShop();
+        };
+
+        // ── CALCULATE ────────────────────────────────────────────────────
+        function calculate() {
+            const w = parseFloat(document.getElementById('weight').value), h = parseFloat(document.getElementById('height').value), a = parseInt(document.getElementById('age').value), g = document.getElementById('gender').value;
+            const act = parseFloat(document.getElementById('activity').value), goal = document.getElementById('goal').value;
+            if (!w || !h || !a) return alert(t('fill_all_fields'));
+            let bmr = g === 'M' ? 88.362 + (13.397 * w) + (4.799 * h) - (5.677 * a) : 447.593 + (9.247 * w) + (3.098 * h) - (4.33 * a);
+            let tdee = bmr * act;
+            if (goal === 'loss') tdee -= 500;
+            if (goal === 'gain') tdee += 300;
+            S.tdee = tdee; S.bmr = bmr; S.goal = goal; S.weight = w; save(); showResults();
+        }
+        function showResults() {
+            const tval = S.tdee, b = S.bmr, g = S.goal, w = S.weight;
+            document.getElementById('res-bmr').innerText = Math.round(b) + ' ' + t('kcal');
+            document.getElementById('res-cal').innerText = Math.round(tval) + ' ' + t('kcal');
+            document.getElementById('res-prot').innerText = Math.round((tval * .25) / 4) + 'g';
+            document.getElementById('res-carb').innerText = Math.round((tval * .50) / 4) + 'g';
+            document.getElementById('res-fat').innerText = Math.round((tval * .25) / 9) + 'g';
+            document.getElementById('res-water').innerText = ((w * 35) / 1000).toFixed(1) + ' ' + t('liter_day');
+            const tags = {
+                loss: `<span class="gtag gt-l">🔻 ${t('weight_loss')} (−500 ${t('kcal')})</span>`,
+                gain: `<span class="gtag gt-g">💪 ${t('muscle_gain')} (+300 ${t('kcal')})</span>`,
+                maintain: `<span class="gtag gt-m">⚖️ ${t('maintenance')}</span>`
+            };
+            document.getElementById('goal-tag').innerHTML = tags[g] || tags.maintain;
+            document.getElementById('results').style.display = 'block';
+        }
+
+        // ── FOOD DATABASE ────────────────────────────────────────────────
+        const FOODS = {
+            breakfast: [
+                { n: "Oatmeal with Berries & Walnuts", e: "🥣", p: 15, c: 55, f: 12 },
+                { n: "Scrambled Eggs, Avocado & Toast", e: "🥑", p: 22, c: 30, f: 20 },
+                { n: "Greek Yogurt with Honey & Granola", e: "🥝", p: 18, c: 45, f: 6 },
+                { n: "Whole Wheat Pancakes & Strawberries", e: "🥞", p: 12, c: 60, f: 8 },
+                { n: "Ful Medames with Olive Oil & Eggs", e: "🫘", p: 20, c: 35, f: 10 },
+                { n: "Smoked Salmon Bagel & Cream Cheese", e: "🐟", p: 25, c: 38, f: 15 },
+                { n: "Chia Pudding with Mango & Coconut Milk", e: "🥭", p: 10, c: 40, f: 14 },
+                { n: "Shakshuka with Warm Bread", e: "🍳", p: 19, c: 28, f: 14 },
+                { n: "Peanut Butter & Banana Smoothie Bowl", e: "🍌", p: 24, c: 50, f: 10 },
+                { n: "Cottage Cheese with Peach & Almonds", e: "🍑", p: 20, c: 20, f: 8 },
+                { n: "Cinnamon French Toast", e: "🍞", p: 14, c: 52, f: 12 },
+                { n: "Veggie Omelette (Spinach, Mushroom)", e: "🌿", p: 23, c: 8, f: 16 },
+                { n: "Falafel Wrap with Tahini & Tomatoes", e: "🫓", p: 16, c: 45, f: 12 },
+                { n: "Quinoa Bowl with Nuts & Dried Fruit", e: "🌰", p: 12, c: 48, f: 10 },
+                { n: "Acai Bowl with Granola & Banana", e: "🫐", p: 8, c: 58, f: 6 },
+            ],
+            lunch: [
+                { n: "Grilled Chicken with Brown Rice & Broccoli", e: "🍗", p: 45, c: 55, f: 8 },
+                { n: "Beef Kofta Skewers with Bulgur & Salad", e: "🥩", p: 40, c: 48, f: 16 },
+                { n: "Salmon with Sweet Potato & Greens", e: "🐠", p: 38, c: 42, f: 18 },
+                { n: "Quinoa & Chickpea Bowl with Feta", e: "🫙", p: 22, c: 60, f: 12 },
+                { n: "Grilled Tuna with Steamed Veggies", e: "🎣", p: 42, c: 10, f: 8 },
+                { n: "Whole Wheat Pasta with Chicken & Pesto", e: "🍝", p: 36, c: 65, f: 14 },
+                { n: "Stuffed Bell Peppers with Rice & Meat", e: "🫑", p: 30, c: 50, f: 12 },
+                { n: "Lentil & Vegetable Stew with Pita", e: "🥘", p: 20, c: 58, f: 6 },
+                { n: "Teriyaki Salmon Bowl with Edamame", e: "🍱", p: 40, c: 55, f: 15 },
+                { n: "Turkey Stuffed Zucchini Boats", e: "🥒", p: 35, c: 18, f: 10 },
+                { n: "Chicken Shawarma with Hummus & Salad", e: "🥙", p: 38, c: 42, f: 16 },
+                { n: "Soba Noodles with Tofu & Sesame", e: "🍜", p: 18, c: 60, f: 10 },
+                { n: "Beef Stir-Fry with Jasmine Rice", e: "🥢", p: 35, c: 55, f: 14 },
+                { n: "Baked Cod with Quinoa & Asparagus", e: "🐟", p: 36, c: 38, f: 7 },
+                { n: "Black Bean Burrito Bowl & Guacamole", e: "🌯", p: 20, c: 62, f: 16 },
+            ],
+            snack: [
+                { n: "Mixed Nuts & Dried Cranberries", e: "🥜", p: 6, c: 15, f: 14 },
+                { n: "Chocolate Protein Shake with Milk", e: "🥛", p: 25, c: 20, f: 4 },
+                { n: "Apple Slices with Almond Butter", e: "🍎", p: 4, c: 28, f: 8 },
+                { n: "Rice Cakes with Hummus & Cucumber", e: "🥒", p: 6, c: 22, f: 4 },
+                { n: "Hard-Boiled Eggs with Sea Salt", e: "🥚", p: 12, c: 1, f: 9 },
+                { n: "Dark Chocolate (70%) & Walnuts", e: "🍫", p: 4, c: 18, f: 12 },
+                { n: "Banana with Peanut Butter", e: "🍌", p: 6, c: 32, f: 9 },
+                { n: "Edamame with Sea Salt", e: "🫛", p: 12, c: 10, f: 5 },
+                { n: "Low-Fat Cheese & Grain Crackers", e: "🧀", p: 10, c: 18, f: 6 },
+                { n: "Mango Chili Fruit Cup", e: "🥭", p: 2, c: 30, f: 1 },
+                { n: "Greek Yogurt with Blueberries", e: "🫐", p: 10, c: 14, f: 2 },
+                { n: "Pumpkin Seeds & Raisins Trail Mix", e: "🌱", p: 7, c: 16, f: 10 },
+                { n: "Celery Sticks with Peanut Butter", e: "🥜", p: 5, c: 10, f: 8 },
+                { n: "Oat Energy Bites", e: "🍪", p: 8, c: 28, f: 5 },
+                { n: "Avocado Toast on Rice Crackers", e: "🥑", p: 4, c: 18, f: 10 },
+            ],
+            dinner: [
+                { n: "Lean Beef Steak with Roasted Cauliflower", e: "🥩", p: 42, c: 15, f: 18 },
+                { n: "Baked Chicken Thighs with Sweet Potato", e: "🍗", p: 38, c: 40, f: 14 },
+                { n: "Turkey Meatballs, Tomato & Zoodles", e: "🍝", p: 36, c: 20, f: 12 },
+                { n: "Prawn Stir-Fry with Brown Rice & Bok Choy", e: "🦐", p: 30, c: 45, f: 8 },
+                { n: "Lamb Chops with Roasted Root Veg", e: "🍖", p: 40, c: 30, f: 20 },
+                { n: "Grilled Fish Tacos with Cabbage Slaw", e: "🌮", p: 32, c: 38, f: 10 },
+                { n: "Lentil Soup with Whole Grain Bread", e: "🥣", p: 18, c: 55, f: 8 },
+                { n: "Chicken & Veg Curry with Basmati", e: "🍛", p: 35, c: 50, f: 12 },
+                { n: "Seared Tuna with Sesame Soba", e: "🎣", p: 40, c: 40, f: 9 },
+                { n: "Stuffed Chicken with Spinach & Ricotta", e: "🫕", p: 42, c: 8, f: 16 },
+                { n: "Moroccan Vegetable Tagine & Couscous", e: "🥘", p: 14, c: 60, f: 7 },
+                { n: "Swordfish with Mediterranean Salsa", e: "🐟", p: 38, c: 12, f: 13 },
+                { n: "Beef & Broccoli with Cauliflower Rice", e: "🥦", p: 38, c: 18, f: 14 },
+                { n: "Baked Cod with Garlic Butter & Asparagus", e: "🐟", p: 34, c: 8, f: 10 },
+                { n: "Chickpea & Spinach Masala with Roti", e: "🫘", p: 16, c: 52, f: 8 },
+            ]
+        };
+        const MT = [
+            { id: 'breakfast', lbl: 'Breakfast', pct: .25, icon: '☀️', time: '7:00 AM' },
+            { id: 'lunch', lbl: 'Lunch', pct: .35, icon: '🌤', time: '12:30 PM' },
+            { id: 'snack', lbl: 'Snack', pct: .10, icon: '⚡', time: '3:30 PM' },
+            { id: 'dinner', lbl: 'Dinner', pct: .30, icon: '🌙', time: '7:30 PM' },
+        ];
+
+        // ── WORKOUT PROGRAMS ─────────────────────────────────────────────
+        const WPRG = {
+            loss: {
+                name: "Fat Burn Program", i18nName: "fat_burn", days: [
+                    { type: 'strength', title: 'Full Body Burn', dur: '45 min', ex: [{ n: 'Squats', d: '4×12 | 60s' }, { n: 'Push-ups', d: '3×15 | 45s' }, { n: 'Dumbbell Rows', d: '4×12 | 60s' }, { n: 'Reverse Lunges', d: '3×12 | 45s' }, { n: 'Plank Hold', d: '3×45s | 30s' }] },
+                    { type: 'cardio', title: 'Cardio Blast', dur: '40 min', ex: [{ n: 'Warm-up Jog', d: '5 min' }, { n: 'Sprint Intervals', d: '20 min (30s on/30s off)' }, { n: 'Jump Rope', d: '10 min' }, { n: 'Cool-down Walk', d: '5 min' }] },
+                    { type: 'strength', title: 'Upper Body', dur: '40 min', ex: [{ n: 'Bench Press', d: '4×10 | 75s' }, { n: 'Cable Rows', d: '4×10 | 75s' }, { n: 'Shoulder Press', d: '3×12 | 60s' }, { n: 'Bicep Curls', d: '3×12 | 45s' }, { n: 'Tricep Dips', d: '3×12 | 45s' }] },
+                    { type: 'hiit', title: 'HIIT + Core', dur: '35 min', ex: [{ n: 'Burpees', d: '4×10 | 30s' }, { n: 'Mountain Climbers', d: '3×30s | 20s' }, { n: 'Bicycle Crunches', d: '3×20 | 30s' }, { n: 'Jump Squats', d: '3×15 | 45s' }, { n: 'Hollow Body Hold', d: '3×30s | 30s' }] },
+                    { type: 'strength', title: 'Lower Body', dur: '45 min', ex: [{ n: 'Barbell Squats', d: '4×10 | 90s' }, { n: 'Romanian Deadlifts', d: '4×10 | 90s' }, { n: 'Leg Press', d: '3×12 | 75s' }, { n: 'Calf Raises', d: '4×15 | 45s' }, { n: 'Glute Bridges', d: '3×15 | 45s' }] },
+                    { type: 'cardio', title: 'Active Recovery', dur: '30 min', ex: [{ n: 'Light Walk or Cycle', d: '20 min' }, { n: 'Full-Body Stretching', d: '10 min' }] },
+                    { type: 'rest', title: 'Rest Day', dur: '', ex: [] },
+                ]
+            },
+            gain: {
+                name: "Muscle Builder (PPL)", i18nName: "muscle_builder", days: [
+                    { type: 'strength', title: 'Push Day – Chest / Shoulders / Triceps', dur: '60 min', ex: [{ n: 'Bench Press', d: '4×8 | 2 min' }, { n: 'Incline DB Press', d: '3×10 | 90s' }, { n: 'Shoulder Press', d: '4×10 | 90s' }, { n: 'Lateral Raises', d: '3×15 | 60s' }, { n: 'Tricep Pushdown', d: '3×12 | 60s' }] },
+                    { type: 'strength', title: 'Pull Day – Back / Biceps', dur: '60 min', ex: [{ n: 'Deadlifts', d: '4×6 | 3 min' }, { n: 'Pull-ups', d: '4×8 | 2 min' }, { n: 'Seated Cable Rows', d: '4×10 | 90s' }, { n: 'Face Pulls', d: '3×15 | 60s' }, { n: 'Barbell Curls', d: '3×12 | 60s' }] },
+                    { type: 'strength', title: 'Leg Day – Quads / Hamstrings / Calves', dur: '60 min', ex: [{ n: 'Back Squats', d: '5×5 | 3 min' }, { n: 'Romanian Deadlifts', d: '4×8 | 2 min' }, { n: 'Leg Press', d: '3×12 | 90s' }, { n: 'Leg Curls', d: '3×12 | 75s' }, { n: 'Standing Calf Raises', d: '4×20 | 60s' }] },
+                    { type: 'strength', title: 'Push Day – Shoulders Heavy', dur: '55 min', ex: [{ n: 'Overhead Press', d: '5×5 | 3 min' }, { n: 'Cable Flies', d: '4×12 | 75s' }, { n: 'DB Shoulder Press', d: '3×12 | 75s' }, { n: 'Skull Crushers', d: '3×12 | 60s' }, { n: 'Weighted Dips', d: '3×AMAP | 90s' }] },
+                    { type: 'strength', title: 'Pull Day – Volume', dur: '55 min', ex: [{ n: 'Barbell Rows', d: '4×8 | 2 min' }, { n: 'Lat Pulldowns', d: '4×10 | 90s' }, { n: 'Single-arm DB Rows', d: '3×12 | 75s' }, { n: 'Hammer Curls', d: '3×15 | 60s' }, { n: 'Rear Delt Flies', d: '3×15 | 45s' }] },
+                    { type: 'strength', title: 'Leg Day + Core', dur: '55 min', ex: [{ n: 'Front Squats', d: '4×8 | 2 min' }, { n: 'Hip Thrusts', d: '4×12 | 90s' }, { n: 'Walking Lunges', d: '3×12 | 75s' }, { n: 'Ab Wheel Rollouts', d: '3×10 | 60s' }, { n: 'Calf Raises', d: '4×20 | 45s' }] },
+                    { type: 'rest', title: 'Rest & Recover', dur: '', ex: [] },
+                ]
+            },
+            maintain: {
+                name: "Balanced Fitness Program", i18nName: "balanced", days: [
+                    { type: 'strength', title: 'Upper Body Strength', dur: '45 min', ex: [{ n: 'Bench Press', d: '3×10 | 90s' }, { n: 'Pull-ups', d: '3×8 | 90s' }, { n: 'Shoulder Press', d: '3×10 | 75s' }, { n: 'Bicep Curls', d: '2×12 | 60s' }, { n: 'Tricep Pushdowns', d: '2×12 | 60s' }] },
+                    { type: 'cardio', title: 'Cardio – Endurance', dur: '35 min', ex: [{ n: 'Warm-up', d: '5 min' }, { n: 'Steady-state Run or Bike', d: '25 min' }, { n: 'Cool-down Stretch', d: '5 min' }] },
+                    { type: 'strength', title: 'Lower Body Strength', dur: '45 min', ex: [{ n: 'Squats', d: '3×10 | 90s' }, { n: 'Deadlifts', d: '3×8 | 2 min' }, { n: 'Lunges', d: '3×12 | 60s' }, { n: 'Calf Raises', d: '3×15 | 45s' }, { n: 'Plank', d: '3×45s | 30s' }] },
+                    { type: 'rest', title: 'Active Rest / Yoga', dur: '20 min', ex: [{ n: 'Light Stretching or Yoga Flow', d: '20 min' }] },
+                    { type: 'hiit', title: 'Full Body HIIT', dur: '30 min', ex: [{ n: 'Jump Squats', d: '4×15 | 30s' }, { n: 'Push-up Burpees', d: '4×10 | 30s' }, { n: 'Kettlebell Swings', d: '4×15 | 45s' }, { n: 'Box Jumps', d: '3×10 | 45s' }, { n: 'Mountain Climbers', d: '3×30s | 30s' }] },
+                    { type: 'cardio', title: 'Cardio + Mobility', dur: '40 min', ex: [{ n: 'Jog or Swim', d: '30 min' }, { n: 'Foam Roll & Mobility', d: '10 min' }] },
+                    { type: 'rest', title: 'Full Rest Day', dur: '', ex: [] },
+                ]
+            }
+        };
+
+        // ── DIET LOGIC ───────────────────────────────────────────────────
+        const pick = id => { const a = FOODS[id]; return { ...(a[Math.floor(Math.random() * a.length)]) }; };
+        const genDay = () => { const d = {}; MT.forEach(m => d[m.id] = pick(m.id)); return d; };
+
+        function initDiet() {
+            S.plan = []; S.curDay = 0;
+            for (let i = 0; i < 30; i++)S.plan.push(genDay());
+            save();
+            document.getElementById('d-empty').style.display = 'none';
+            document.getElementById('d-plan').style.display = 'block';
+            buildDayDots(); renderDay(0);
+        }
+        function buildDayDots() {
+            const c = document.getElementById('ddots'); c.innerHTML = '';
+            for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'ddot' + (i === S.curDay ? ' act' : ''); d.textContent = i + 1; d.onclick = () => renderDay(i); c.appendChild(d); }
+            applyTranslations();
+        }
+        function updDDots() { document.querySelectorAll('#ddots .ddot').forEach((d, i) => { d.className = 'ddot' + (i === S.curDay ? ' act' : ' vis'); }); }
+        function renderDay(idx) {
+            S.curDay = idx; const tval = S.tdee, day = S.plan[idx];
+            document.getElementById('dlbl').textContent = `${t('day')} ${idx + 1}`;
+            let tp = 0, tc = 0, tf = 0;
+            MT.forEach(m => { const f = day[m.id], sc = (tval * m.pct) / 400; tp += Math.round(f.p * sc); tc += Math.round(f.c * sc); tf += Math.round(f.f * sc); });
+            document.getElementById('dsum').innerHTML = `<div class="si"><div class="sv">${Math.round(tval)} ${t('kcal')}</div><div class="sl">${t('calories')}</div></div><div class="si"><div class="sv">${tp}g</div><div class="sl">${t('protein')}</div></div><div class="si"><div class="sv">${tc}g</div><div class="sl">${t('carbs')}</div></div><div class="si"><div class="sv">${tf}g</div><div class="sl">${t('fat')}</div></div>`;
+            const ml = document.getElementById('meal-list'); ml.innerHTML = ''; ml.style.animation = 'none'; ml.offsetHeight; ml.style.animation = '';
+            MT.forEach(m => {
+                const f = day[m.id], cal = Math.round(tval * m.pct), sc = cal / 400;
+                const card = document.createElement('div'); card.className = 'mc'; card.id = 'mc-' + m.id;
+                card.innerHTML = `<div class="mt"><div class="mlbl"><span>${m.icon}</span>${t(m.id)}</div><div style="display:flex;align-items:center;gap:7px"><span class="mcal">${cal} ${t('kcal')}</span><button class="sbtn" onclick="swapMeal('${m.id}')">⇄ ${t('swap')}</button></div></div><div class="mtime">🕐 ${m.time}</div><div class="mname">${f.e} ${f.n}</div><div class="mmac"><div class="mac">🥩 <span>${Math.round(f.p * sc)}g</span></div><div class="mac">🌾 <span>${Math.round(f.c * sc)}g</span></div><div class="mac">🫒 <span>${Math.round(f.f * sc)}g</span></div></div>`;
+                ml.appendChild(card);
+            });
+            updDDots(); save();
+        }
+        function chgDay(d) { const n = S.curDay + d; if (n >= 0 && n < 30) renderDay(n); }
+        function swapMeal(id) {
+            const cur = S.plan[S.curDay][id], opts = FOODS[id];
+            let next = cur; while (next.n === cur.n && opts.length > 1) next = { ...opts[Math.floor(Math.random() * opts.length)] };
+            S.plan[S.curDay][id] = next; save();
+            const t = S.tdee, m = MT.find(x => x.id === id), cal = Math.round(t * m.pct), sc = cal / 400;
+            const card = document.getElementById('mc-' + id);
+            card.style.opacity = '0'; card.style.transition = 'opacity .2s';
+            setTimeout(() => { card.querySelector('.mname').innerHTML = `${next.e} ${next.n}`; card.querySelector('.mmac').innerHTML = `<div class="mac">🥩 <span>${Math.round(next.p * sc)}g</span></div><div class="mac">🌾 <span>${Math.round(next.c * sc)}g</span></div><div class="mac">🫒 <span>${Math.round(next.f * sc)}g</span></div>`; card.style.opacity = '1'; }, 200);
+        }
+        function regenDay() { S.plan[S.curDay] = genDay(); save(); renderDay(S.curDay); }
+
+        // ── WORKOUT LOGIC ────────────────────────────────────────────────
+        function initWorkout() {
+            const prg = WPRG[S.goal] || WPRG.maintain;
+            S.wplan = []; S.curWDay = 0;
+            for (let i = 0; i < 30; i++)S.wplan.push(prg.days[i % prg.days.length]);
+            save();
+            document.getElementById('wo-empty').style.display = 'none';
+            document.getElementById('wo-plan').style.display = 'block';
+            document.getElementById('wo-title').textContent = t(prg.i18nName) || prg.name;
+            buildWDots(); renderWDay(0);
+        }
+        function buildWDots() {
+            const c = document.getElementById('wdots'); c.innerHTML = '';
+            for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'ddot' + (i === S.curWDay ? ' act' : ''); d.textContent = i + 1; d.onclick = () => renderWDay(i); c.appendChild(d); }
+        }
+        const TYPE_CLS = { strength: 'tp', cardio: 'tc', hiit: 'th', rest: '' };
+        const TYPE_LBL = { strength: 'strength', cardio: 'cardio', hiit: 'hiit', rest: 'rest' };
+        const TYPE_BADGE = { strength: 'bp', cardio: 'bc', hiit: 'bh', rest: 'br' };
+        function renderWDay(idx) {
+            S.curWDay = idx; const day = S.wplan[idx];
+            document.getElementById('wdlbl').textContent = `${t('day')} ${idx + 1}`;
+            const tc = TYPE_CLS[day.type] || '', tb = TYPE_BADGE[day.type] || 'br', tl = t(TYPE_LBL[day.type]) || t('rest');
+            let html = `<div class="wkcard ${tc}"><div class="wkh"><div class="wkt">${day.title}</div><span class="wkb ${tb}">${tl}</span></div>`;
+            if (day.dur) html += `<div class="wkd">⏱ ${day.dur}</div>`;
+            if (day.ex.length) { html += day.ex.map(e => `<div class="exrow"><div class="exn">${e.n}</div><div class="exd">${e.d}</div></div>`).join(''); }
+            else html += `<div style="color:#4a4a6a;font-size:.8rem;text-align:center;padding:12px">${t('recovery_rest')}</div>`;
+            html += '</div>';
+            document.getElementById('wo-content').innerHTML = html;
+            document.querySelectorAll('#wdots .ddot').forEach((d, i) => { d.className = 'ddot' + (i === idx ? ' act' : ' vis'); });
+            save();
+        }
+        function chgWDay(d) { const n = S.curWDay + d; if (n >= 0 && n < 30) renderWDay(n); }
+
+        // ── PROGRESS TRACKING ────────────────────────────────────────────
+        function addEntry() {
+            const w = parseFloat(document.getElementById('pw').value), dt = document.getElementById('pd').value;
+            if (!w || !dt) return alert(t('enter_weight_date'));
+            if (w < 20 || w > 300) return alert(t('enter_valid_weight'));
+            S.prog.push({ date: dt, weight: w });
+            S.prog.sort((a, b) => a.date.localeCompare(b.date));
+            document.getElementById('pw').value = ''; save();
+            renderProgList(); updateChart();
+        }
+        function deleteEntry(idx) { S.prog.splice(idx, 1); save(); renderProgList(); updateChart(); }
+        function renderProgList() {
+            const list = document.getElementById('plist'), empty = document.getElementById('p-empty'), stats = document.getElementById('pstats-row');
+            if (!S.prog.length) { list.innerHTML = ''; empty.style.display = 'block'; stats.style.display = 'none'; return; }
+            empty.style.display = 'none';
+            const sorted = [...S.prog].reverse();
+            const first = S.prog[0].weight, last = S.prog[S.prog.length - 1].weight, diff = (last - first).toFixed(1);
+            const best = Math.min(...S.prog.map(e => e.weight)), worst = Math.max(...S.prog.map(e => e.weight));
+            stats.style.display = 'flex';
+            stats.innerHTML = `<div class="pst"><div class="pst-v">${first} kg</div><div class="pst-l">${t('start')}</div></div><div class="pst"><div class="pst-v">${last} kg</div><div class="pst-l">${t('current')}</div></div><div class="pst"><div class="pst-v ${diff > 0 ? 'dup' : diff < 0 ? 'ddn' : ''}">${diff > 0 ? '+' : ''}${diff} kg</div><div class="pst-l">${t('change')}</div></div>`;
+            list.innerHTML = sorted.map((e, i) => {
+                const prev = sorted[i + 1];
+                let delta = '', dc = 'dsm';
+                if (prev) { const d = (e.weight - prev.weight).toFixed(1); dc = d > 0 ? 'dup' : d < 0 ? 'ddn' : 'dsm'; delta = `${d > 0 ? '+' : ''}${d} kg`; }
+                return `<div class="pentry"><div class="pe-l"><div class="pe-date">${e.date}</div><div class="pe-w">${e.weight} kg</div></div><div style="display:flex;align-items:center;gap:8px">${delta ? `<span class="pe-d ${dc}">${delta}</span>` : ''}<button class="btn-del" onclick="deleteEntry(${S.prog.indexOf(e)})">✕</button></div></div>`;
+            }).join('');
+        }
+        function updateChart() {
+            const el = document.getElementById('chart-bars');
+            const data = S.prog.slice(-7);
+            if (!data.length) { el.innerHTML = `<div style="color:#3a3a5a;font-size:.8rem;text-align:center;padding:14px 0">${t('no_data')}</div>`; return; }
+            const mx = Math.max(...data.map(e => e.weight)), mn = Math.min(...data.map(e => e.weight)), range = mx - mn || 1;
+            el.className = 'cbars';
+            el.innerHTML = data.map(e => { const h = Math.max(10, Math.round(((e.weight - mn) / range) * 50)); return `<div class="cbar-w"><div class="cbar" style="height:${h}px"></div><div class="cbar-l">${e.weight}</div></div>`; }).join('');
+        }
+
+        // ── SHOPPING LIST ────────────────────────────────────────────────
+        const SHOP_CATS = [
+            { k: 'proteins', title: '🥩 Proteins', items: ['Chicken Breast – 1.5 kg', 'Salmon Fillets – 4 pcs', 'Lean Ground Beef – 500g', 'Tuna Steaks – 2 pcs', 'Turkey Mince – 400g', 'Eggs – 12x', 'Tofu – 400g'] },
+            { k: 'grains', title: '🌾 Carbs & Grains', items: ['Brown Rice – 1 kg', 'Sweet Potatoes – 1 kg', 'Quinoa – 500g', 'Rolled Oats – 500g', 'Whole Wheat Bread – 1 loaf', 'Whole Wheat Pasta – 500g', 'Bulgur – 400g'] },
+            { k: 'vegetables', title: '🥦 Vegetables', items: ['Broccoli – 500g', 'Spinach – 200g', 'Bell Peppers – 4x', 'Zucchini – 3x', 'Asparagus – 1 bunch', 'Mixed Stir-fry Veg – 500g', 'Tomatoes – 6x'] },
+            { k: 'fruits', title: '🍓 Fruits', items: ['Bananas – 7x', 'Berries Mix – 400g', 'Apples – 6x', 'Kiwi – 4x', 'Mango – 2x'] },
+            { k: 'dairy', title: '🥛 Dairy', items: ['Greek Yogurt – 500g', 'Milk (whole) – 1 L', 'Cream Cheese – 200g', 'Feta Cheese – 200g', 'Low-fat Cheese Slices'] },
+            { k: 'healthy_fats', title: '🫒 Healthy Fats', items: ['Avocados – 4x', 'Olive Oil – 500ml', 'Mixed Nuts – 250g', 'Almond Butter – 1 jar', 'Peanut Butter – 1 jar', 'Coconut Milk – 400ml'] },
+            { k: 'pantry', title: '🥫 Pantry', items: ['Hummus – 400g', 'Rice Cakes – 1 pack', 'Dark Chocolate 70% – 200g', 'Honey – 1 jar', 'Granola – 400g', 'Protein Powder – 1 kg', 'Chickpeas (can) – 2x', 'Lentils – 500g'] },
+        ];
+        function buildShop() {
+            S.shop = SHOP_CATS; S.shopChk = {}; save(); renderShop();
+        }
+        function renderShop() {
+            document.getElementById('sh-empty').style.display = 'none';
+            document.getElementById('sh-content').style.display = 'block';
+            document.getElementById('sh-cats').innerHTML = S.shop.map(cat => `<div class="shopcat"><div class="shopcat-t">${cat.title.split(' ')[0]} ${t(cat.k)}</div>${cat.items.map(item => { const k = item; const chk = S.shopChk[k]; return `<div class="shopitem${chk ? ' chk' : ''}" onclick="toggleShopItem('${k.replace(/'/g, "\\'")}')"><div class="schk">${chk ? '✓' : ''}</div><div class="sname">${item}</div></div>`; }).join('')}</div>`).join('');
+        }
+        function toggleShopItem(k) { S.shopChk[k] = !S.shopChk[k]; save(); renderShop(); }
+        function resetShop() { S.shopChk = {}; save(); renderShop(); }
+    </script>
+</body>
+
+</html>

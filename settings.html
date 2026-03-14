@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masar — Settings</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .settings-grid {
+            margin-top: 24px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .settings-card {
+            padding: 24px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border2);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-info {
+            flex: 1;
+        }
+
+        .settings-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .settings-desc {
+            font-size: 0.85rem;
+            color: var(--text-3);
+        }
+
+        .settings-control {
+            margin-left: 20px;
+        }
+
+        /* إصلاح الأفاتار - القضاء على القص وتداخل الحروف */
+        .dev-avatar {
+            width: 80px !important;
+            height: 80px !important;
+            border-radius: 50% !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            border: 2px solid var(--purple);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            /* لظهور الصورة كاملة */
+        }
+
+        @media (max-width: 768px) {
+            .dev-avatar {
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 1rem !important;
+            }
+        }
+
+        .lang-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: var(--text-3);
+        }
+
+        .lang-btn:hover {
+            color: var(--text-1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--purple-l) 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .danger-card {
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .danger-title {
+            color: #f87171 !important;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        body.rtl .settings-control {
+            margin-left: 0;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="dumbbell"></i></div>
+                <span class="logo-text">Masar</span>
+            </div>
+            <div class="nav-section-label" data-i18n="main">Main</div>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i><span class="nav-label"
+                    data-i18n="dashboard">Dashboard</span></a>
+            <a href="stats.html" class="nav-item"><i data-lucide="zap"></i><span class="nav-label"
+                    data-i18n="stats">Stats</span></a>
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="tools">Tools</div>
+            <a href="diet.html" class="nav-item"><i data-lucide="utensils"></i><span class="nav-label"
+                    data-i18n="diet">Diet Plan</span></a>
+            <a href="workout.html" class="nav-item"><i data-lucide="dumbbell"></i><span class="nav-label"
+                    data-i18n="workout">Workout</span></a>
+            <a href="progress.html" class="nav-item"><i data-lucide="trending-up"></i><span class="nav-label"
+                    data-i18n="progress">Progress</span></a>
+            <a href="settings.html" class="nav-item active"><i data-lucide="settings"></i><span class="nav-label"
+                    data-i18n="settings">Settings</span></a>
+            <a href="login.html" id="auth-link" class="nav-item"><i data-lucide="log-in"></i><span class="nav-label"
+                    data-i18n="login">Login</span></a>
+            <div class="sidebar-footer">
+                <div style="color: var(--purple-l); font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">✨ Define
+                    Your Masar</div>
+                <span style="opacity: 0.6; font-size: 0.75rem;">Masar v2.0</span>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="main-inner">
+                <div class="page-header-row fade-up">
+                    <div>
+                        <h1 class="page-title" data-i18n="settings">Settings</h1>
+                        <p class="page-subtitle" data-i18n="personalize_desc">Manage your profile and app preferences
+                        </p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="card settings-card fade-up">
+                        <h2 class="section-title" data-i18n="profile_settings">Profile Settings</h2>
+                        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div id="user-avatar-preview" class="dev-avatar">G</div>
+                                <div class="settings-info">
+                                    <div class="settings-label" id="profile-name-display">Guest</div>
+                                    <div class="settings-desc" id="profile-email-display">guest@example.com</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="input-name" class="form-input" placeholder=" ">
+                                <label class="form-label" data-i18n="display_name">Display Name</label>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <input type="file" id="input-photo" class="form-input" accept="image/*"
+                                        onchange="handlePhotoUpload(this)">
+                                </div>
+                                <button class="btn btn-primary" onclick="updateProfile()">
+                                    <i data-lucide="save" style="width:16px; margin-right:8px;"></i><span
+                                        data-i18n="save">Save</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card fade-up-2">
+                        <h2 class="section-title" data-i18n="localization">Localization</h2>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <div class="settings-label" data-i18n="language">Language</div>
+                                <div class="settings-desc" data-i18n="lang_desc">Preferred language</div>
+                            </div>
+                            <div class="settings-control">
+                                <div class="lang-toggle">
+                                    <button id="lang-en" class="lang-btn" onclick="setLanguage('en')">English</button>
+                                    <button id="lang-ar" class="lang-btn" onclick="setLanguage('ar')">العربية</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card fade-up-3">
+                        <h2 class="section-title" data-i18n="developer_info">Developer Information</h2>
+                        <div id="developer-card-root"></div>
+                    </div>
+
+                    <div class="card settings-card danger-card fade-up">
+                        <h2 class="section-title danger-title" data-i18n="danger_zone">Danger Zone</h2>
+                        <div class="settings-item">
+                            <div class="settings-info">
+                                <div class="settings-label" data-i18n="reset_all_data">Reset All Data</div>
+                                <div class="settings-desc">Clear everything (statistics, plans, progress)</div>
+                            </div>
+                            <button class="btn-danger" onclick="resetAppData()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="shared-animations.js"></script>
+    <script src="developer-card-component.js"></script>
+
+    <script>
+        // 1. Photo Upload & Compression
+        function handlePhotoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 400;
+                        const scale = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        input.setAttribute('data-photo', dataUrl);
+                        updateAvatarPreview({ photo: dataUrl });
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 2. Avatar Preview (Fixing the Crop Issue)
+        function updateAvatarPreview(up) {
+            const preview = document.getElementById('user-avatar-preview');
+            if (!preview) return;
+
+            preview.textContent = ''; // Clear the 'A' or 'G' letter
+            preview.innerHTML = '';
+
+            if (up && up.photo) {
+                preview.style.backgroundImage = `url(${up.photo})`;
+                preview.style.backgroundSize = 'contain';
+                preview.style.backgroundPosition = 'center';
+                preview.style.backgroundRepeat = 'no-repeat';
+                preview.style.backgroundColor = '#1a1a1a';
+            } else {
+                preview.style.backgroundImage = 'none';
+                preview.style.backgroundColor = 'var(--purple)';
+                preview.textContent = up && up.name ? up.name.charAt(0).toUpperCase() : 'G';
+            }
+        }
+
+        // 3. Update Profile Logic
+        function updateProfile() {
+            const S = loadState();
+            const newName = document.getElementById('input-name').value.trim();
+            const photoData = document.getElementById('input-photo').getAttribute('data-photo');
+
+            if (!newName) return alert(S.lang === 'ar' ? "أدخل الاسم" : "Enter name");
+
+            S.userprofile = {
+                ...S.userprofile,
+                name: newName,
+                photo: photoData || (S.userprofile ? S.userprofile.photo : null)
+            };
+            S.user = newName;
+            saveState(S);
+
+            document.getElementById('profile-name-display').textContent = newName;
+            updateAvatarPreview(S.userprofile);
+            applyTranslations();
+            alert(S.lang === 'ar' ? "تم التحديث!" : "Updated!");
+        }
+
+        // 4. App Management
+        function resetAppData() {
+            const S = loadState();
+            if (confirm(S.lang === 'ar' ? "هل أنت متأكد؟ سيتم حذف كل شيء." : "Are you sure? This cannot be undone.")) {
+                localStorage.removeItem(STATE_KEY);
+                location.href = 'index.html';
+            }
+        }
+
+        function handleLogout() {
+            logout();
+        }
+
+        // 5. Page Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndSaveState().then(() => {
+                const S = loadState();
+                const up = S.userprofile || { name: S.user || 'Guest', photo: null };
+
+                document.getElementById('input-name').value = up.name;
+                document.getElementById('profile-name-display').textContent = up.name;
+                document.getElementById('profile-email-display').textContent = up.email || '';
+
+                updateAvatarPreview(up);
+
+                const authLink = document.getElementById('auth-link');
+                if (authLink && S.user) {
+                    authLink.innerHTML = '<i data-lucide="log-out"></i><span class="nav-label" data-i18n="logout">Logout</span>';
+                    authLink.href = '#';
+                    authLink.onclick = (e) => { e.preventDefault(); handleLogout(); };
+                }
+
+                lucide.createIcons();
+                applyTranslations();
+            });
+        });
+    </script>
+</body>
+
+</html>

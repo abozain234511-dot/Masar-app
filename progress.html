@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masar — Progress</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .log-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-bottom: 6px
+        }
+
+        .log-row .form-group {
+            flex: 1;
+            margin-bottom: 0
+        }
+
+        .pstat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 22px
+        }
+
+        .pst {
+            background: rgba(0, 0, 0, .25);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center
+        }
+
+        .pst-v {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 4px
+        }
+
+        .pst-l {
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-3);
+            font-family: 'Outfit', sans-serif
+        }
+
+        .v-cyan {
+            background: linear-gradient(135deg, var(--cyan), var(--purple-l));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .v-up {
+            color: var(--orange)
+        }
+
+        .v-dn {
+            color: #6dffa8
+        }
+
+        .chart-wrap {
+            background: rgba(0, 0, 0, .2);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+        }
+
+        .chart-hd {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: .78rem;
+            color: var(--text-3)
+        }
+
+        .chart-hd span:last-child {
+            font-family: 'Outfit', sans-serif;
+            color: var(--cyan);
+            font-weight: 700
+        }
+
+        .chart-area {
+            height: 180px;
+            width: 100%;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .chart-grid {
+            stroke: var(--border2);
+            stroke-width: 0.5;
+            opacity: 0.3;
+        }
+
+        .chart-path {
+            fill: none;
+            stroke: url(#chart-grad);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
+            animation: drawPath 1.5s ease-out forwards;
+        }
+
+        @keyframes drawPath {
+            from {
+                stroke-dashoffset: 1000;
+                stroke-dasharray: 1000;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+                stroke-dasharray: 1000;
+            }
+        }
+
+        .chart-fill {
+            fill: url(#area-grad);
+            opacity: 0.25;
+            pointer-events: none;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 0.25;
+            }
+        }
+
+        .chart-point {
+            fill: #fff;
+            stroke: var(--cyan);
+            stroke-width: 2;
+            transition: all 0.3s;
+            cursor: pointer;
+            animation: popIn 0.4s ease-out backwards;
+        }
+
+        .chart-point:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .chart-point:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .chart-point:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .chart-point:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .chart-point:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .chart-point:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .chart-point:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        @keyframes popIn {
+            from {
+                r: 0;
+                opacity: 0;
+            }
+
+            to {
+                r: 4;
+                opacity: 1;
+            }
+        }
+
+        .chart-point:hover {
+            r: 7;
+            filter: drop-shadow(0 0 8px var(--cyan));
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(15, 15, 35, 0.95);
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            padding: 8px 12px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(34, 211, 238, 0.2);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-weight {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .tooltip-date {
+            font-size: 0.75rem;
+            color: var(--text-3);
+            margin-top: 2px;
+        }
+
+        .chart-avg-line {
+            stroke: var(--purple);
+            stroke-width: 1;
+            stroke-dasharray: 5, 5;
+            opacity: 0.6;
+        }
+
+        .chart-avg-label {
+            font-size: 9px;
+            fill: var(--purple);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .chart-label {
+            font-size: 10px;
+            fill: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.8s;
+        }
+
+        .chart-axis-label {
+            font-size: 9px;
+            fill: #aaa;
+        }
+
+        .pentry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border2);
+            border-radius: var(--r-sm);
+            margin-bottom: 7px;
+            transition: var(--transition);
+        }
+
+        .pentry:hover {
+            border-color: var(--border);
+            background: rgba(124, 58, 237, .04)
+        }
+
+        .pe-date {
+            font-size: .72rem;
+            color: var(--text-3);
+            margin-bottom: 3px
+        }
+
+        .pe-wt {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text)
+        }
+
+        .pe-delta {
+            font-size: .72rem;
+            padding: 2px 9px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif
+        }
+
+        .d-up {
+            color: var(--orange);
+            background: rgba(249, 168, 37, .08);
+            border: 1px solid rgba(249, 168, 37, .15)
+        }
+
+        .d-dn {
+            color: #6dffa8;
+            background: rgba(109, 255, 168, .07);
+            border: 1px solid rgba(109, 255, 168, .15)
+        }
+
+        .d-same {
+            color: var(--text-3)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="dumbbell" style="color:#fff;width:22px;height:22px"></i>
+                </div><span class="logo-text">Masar</span>
+            </div>
+            <div class="nav-section-label" data-i18n="main">Main</div>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i><span class="nav-label"
+                    data-i18n="dashboard">Dashboard</span></a>
+            <a href="stats.html" class="nav-item"><i data-lucide="zap"></i><span class="nav-label"
+                    data-i18n="stats">Stats</span></a>
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="tools">Tools</div>
+            <a href="diet.html" class="nav-item"><i data-lucide="utensils"></i><span class="nav-label"
+                    data-i18n="diet">Diet
+                    Plan</span></a>
+            <a href="workout.html" class="nav-item"><i data-lucide="dumbbell"></i><span class="nav-label"
+                    data-i18n="workout">Workout</span></a>
+            <a href="progress.html" class="nav-item active"><i data-lucide="trending-up"></i><span class="nav-label"
+                    data-i18n="progress">Progress</span></a>
+            <a href="shopping.html" class="nav-item"><i data-lucide="shopping-cart"></i><span class="nav-label"
+                    data-i18n="shopping">Shopping</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="account">Account</div>
+            <a href="settings.html" class="nav-item"><i data-lucide="settings"></i><span class="nav-label"
+                    data-i18n="settings">Settings</span></a>
+            <a href="login.html" id="auth-link" class="nav-item"><i data-lucide="log-in"></i><span class="nav-label"
+                    data-i18n="login">Login</span></a>
+
+            <div class="sidebar-footer">
+                <div style="color: var(--purple-l); font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">✨ Define
+                    Your Masar</div>
+                <span style="opacity: 0.6; font-size: 0.75rem;">Masar v2.0</span>
+            </div>
+        </nav>
+        <main class="main">
+            <div class="main-inner">
+
+                <div class="page-header fade-up">
+                    <div class="page-title" data-i18n="progress">Progress Tracker</div>
+                    <p class="page-subtitle" data-i18n="hero_desc">Log weight trends over time with visual charts</p>
+                </div>
+
+                <div class="card fade-up-2" style="margin-bottom:22px">
+                    <h2 class="section-title" data-i18n="log_weight">Log Today's Weight</h2>
+                    <div class="log-row">
+                        <div class="form-group">
+                            <input type="date" id="pdate" class="form-input" placeholder=" ">
+                            <label class="form-label" data-i18n="date">Date</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="pweight" class="form-input" placeholder=" " step="0.1">
+                            <label class="form-label" data-i18n="weight">Weight (kg)</label>
+                        </div>
+                        <button class="btn btn-primary" onclick="logWeight()"
+                            style="flex-shrink:0;height:50px;min-width:80px">
+                            <span data-i18n="save">+ Log</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="prog-data" style="display:none" class="fade-up-3">
+                    <div class="pstat-grid" id="pstat-grid"></div>
+                    <div class="chart-wrap">
+                        <div class="chart-hd"><span>Weight Trend — Last 7 Entries</span><span id="chart-rng"></span>
+                        </div>
+                        <div class="chart-area" id="chart-area"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title" data-i18n="history">History</h2>
+                    <div id="plist"></div>
+                    <div id="p-empty" class="card empty-state" style="display:none"><span class="empty-icon">📉</span>
+                        <div class="empty-text">No entries yet.<br>Log your first weight above!</div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+    <script>
+        // Global functions for weight tracking - must be outside .then() to be accessible from onclick
+        function logWeight() {
+            const S = loadState();
+
+            // تأكد أن S.prog موجود وأنه مصفوفة، وإذا لم يكن، قم بإنشائه كمصفوفة فارغة
+            if (!S.prog || !Array.isArray(S.prog)) {
+                S.prog = [];
+            }
+
+            const d = document.getElementById('pdate').value;
+            const w = parseFloat(document.getElementById('pweight').value);
+
+            if (!d || !w || w < 20 || w > 300) {
+                return alert('Enter a valid date and weight (20–300 kg).');
+            }
+
+            // الآن push ستعمل بالتأكيد لأننا تأكدنا أن S.prog مصفوفة
+            S.prog.push({ date: d, weight: w });
+
+            // ترتيب البيانات حسب التاريخ
+            S.prog.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            saveState(S);
+            render();
+            showToast('Weight logged ✓');
+            document.getElementById('pweight').value = '';
+        }
+        function delEntry(i) { const S = loadState(); S.prog.splice(i, 1); saveState(S); render(); }
+        function render() {
+            const S = loadState();
+            const list = document.getElementById('plist'), empty = document.getElementById('p-empty');
+            if (!S.prog.length) { empty.style.display = 'block'; list.innerHTML = ''; document.getElementById('prog-data').style.display = 'none'; return; }
+            empty.style.display = 'none'; document.getElementById('prog-data').style.display = 'block';
+            const f = S.prog[0].weight, l = S.prog[S.prog.length - 1].weight;
+            const diff = (l - f).toFixed(1), dn = parseFloat(diff);
+            document.getElementById('pstat-grid').innerHTML =
+                `<div class="pst"><div class="pst-v v-cyan">${f} kg</div><div class="pst-l">Start</div></div>` +
+                `<div class="pst"><div class="pst-v v-cyan">${l} kg</div><div class="pst-l">Current</div></div>` +
+                `<div class="pst"><div class="pst-v ${dn > 0 ? 'v-up' : 'v-dn'}">${dn > 0 ? '+' : ''}${diff} kg</div><div class="pst-l">Total Change</div></div>`;
+            const rec = S.prog.slice(-7), wts = rec.map(e => e.weight);
+            const mn = Math.min(...wts), mx = Math.max(...wts), rng = (mx - mn) || 5;
+            const avg = wts.reduce((a, b) => a + b, 0) / wts.length;
+            const avgY = 100 - (((avg - mn) / rng) * 80);
+            document.getElementById('chart-rng').textContent = mn.toFixed(1) + ' – ' + mx.toFixed(1) + ' kg';
+            document.getElementById('chart-area').innerHTML = `
+            <svg class="chart-svg" viewBox="0 0 400 160" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="chart-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#8b5cf6" />
+                        <stop offset="100%" style="stop-color:#22d3ee" />
+                    </linearGradient>
+                    <linearGradient id="area-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#22d3ee" stop-opacity="0.8" />
+                        <stop offset="100%" style="stop-color:#22d3ee" stop-opacity="0" />
+                    </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line class="chart-grid" x1="0" y1="20" x2="400" y2="20"/>
+                <line class="chart-grid" x1="0" y1="50" x2="400" y2="50"/>
+                <line class="chart-grid" x1="0" y1="80" x2="400" y2="80"/>
+                <line class="chart-grid" x1="0" y1="110" x2="400" y2="110"/>
+                <!-- Average line -->
+                <line class="chart-avg-line" x1="0" y1="${avgY}" x2="400" y2="${avgY}"/>
+                <text class="chart-avg-label" x="5" y="${avgY - 5}">Avg: ${avg.toFixed(1)}</text>
+                <path class="chart-fill" id="chart-fill-path"></path>
+                <path class="chart-path" id="chart-main-path"></path>
+                <g id="chart-markers"></g>
+                <g id="chart-labels"></g>
+            </svg>
+            <div class="chart-tooltip" id="chart-tooltip">
+                <div class="tooltip-weight"></div>
+                <div class="tooltip-date"></div>
+            </div>`;
+            // Generate path
+            const pts = S.prog.slice(-7);
+            if (pts.length > 0) {
+                const minW = mn - (rng * 0.1), maxW = mx + (rng * 0.1);
+                const points = pts.map((e, i) => ({
+                    x: (i / (pts.length - 1 || 1)) * 360 + 20,
+                    y: 140 - ((e.weight - minW) / (maxW - minW)) * 120,
+                    weight: e.weight,
+                    date: e.date
+                }));
+                let d = `M ${points[0].x} ${points[0].y}`;
+                points.slice(1).forEach(p => d += ` L ${p.x} ${p.y}`);
+                document.getElementById('chart-main-path').setAttribute('d', d);
+                // Fill
+                const fillD = d + ` L ${points[points.length - 1].x} 160 L ${points[0].x} 160 Z`;
+                document.getElementById('chart-fill-path').setAttribute('d', fillD);
+            }
+            // Markers & Labels with hover tooltips
+            const tooltip = document.getElementById('chart-tooltip');
+            let markersHtml = '', labelsHtml = '';
+            const pts2 = S.prog.slice(-7);
+            pts2.forEach((p, idx) => {
+                const x = (idx / (pts2.length - 1 || 1)) * 360 + 20;
+                const mn2 = mn - (rng * 0.1), mx2 = mx + (rng * 0.1);
+                const y = 140 - ((p.weight - mn2) / (mx2 - mn2)) * 120;
+                markersHtml += `<circle cx="${x}" cy="${y}" r="4" class="chart-point" data-weight="${p.weight}" data-date="${p.date}" data-index="${idx}"></circle>`;
+                labelsHtml += `<text x="${x}" y="${y - 12}" text-anchor="middle" class="chart-label" style="animation-delay: ${0.8 + idx * 0.1}s">${p.weight}</text>`;
+                labelsHtml += `<text x="${x}" y="135" text-anchor="middle" class="chart-axis-label">${p.date.slice(5)}</text>`;
+            });
+            document.getElementById('chart-markers').innerHTML = markersHtml;
+            document.getElementById('chart-labels').innerHTML = labelsHtml;
+            // Add tooltip interactivity
+            document.querySelectorAll('.chart-point').forEach(point => {
+                point.addEventListener('mouseenter', function (e) {
+                    const weight = this.getAttribute('data-weight');
+                    const date = this.getAttribute('data-date');
+                    document.querySelector('.tooltip-weight').textContent = weight + ' kg';
+                    document.querySelector('.tooltip-date').textContent = date;
+                    tooltip.classList.add('visible');
+                    const rect = this.getBoundingClientRect();
+                    const areaRect = document.getElementById('chart-area').getBoundingClientRect();
+                    tooltip.style.left = (rect.left - areaRect.left + 10) + 'px';
+                    tooltip.style.top = (rect.top - areaRect.top - 45) + 'px';
+                });
+                point.addEventListener('mouseleave', function () {
+                    tooltip.classList.remove('visible');
+                });
+            });
+            // Render list
+            list.innerHTML = S.prog.slice().reverse().map((e, i) => {
+                const origIdx = S.prog.indexOf(e);
+                const prev = S.prog[origIdx - 1];
+                let dHtml = '';
+                if (prev) { const d = (e.weight - prev.weight).toFixed(1), dn = parseFloat(d); const cls = dn > 0 ? 'd-up' : dn < 0 ? 'd-dn' : 'd-same'; dHtml = `<span class="pe-delta ${cls}">${dn > 0 ? '+' : ''}${d} kg</span>`; }
+                return `<div class="pentry"><div><div class="pe-date">📅 ${e.date}</div><div class="pe-wt">${e.weight} kg</div></div><div style="display:flex;align-items:center;gap:8px">${dHtml}<button class="btn btn-danger btn-sm" onclick="delEntry(${origIdx})">✕</button></div></div>`;
+            }).join('');
+        }
+
+        // Check authentication - redirect to login if not logged in
+        const token = localStorage.getItem('masar_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Fetch latest data from server before checking auth state
+        fetchAndSaveState().then(() => {
+            const authCheck = loadState();
+            if (!authCheck.user) {
+                window.location.href = 'login.html';
+            }
+
+            setActiveNav();
+            applyTranslations();
+            lucide.createIcons();
+
+            // Update auth link if logged in
+            if (authCheck.user) {
+                const authLink = document.getElementById('auth-link');
+                if (authLink) {
+                    authLink.innerHTML = '<i data-lucide="log-out"></i><span class="nav-label" data-i18n="logout">Logout</span>';
+                    authLink.href = '#';
+                    authLink.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('masar_token');
+                        localStorage.removeItem('masar_user');
+                        location.href = 'login.html';
+                    };
+                }
+            }
+            document.getElementById('pdate').value = new Date().toISOString().split('T')[0];
+            render();
+        });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masar — Workout</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .prog-picker {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .prog-card {
+            background: var(--glass);
+            border: 1.5px solid var(--border2);
+            border-radius: 18px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prog-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, var(--pc-color, rgba(124, 58, 237, .15)), transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .prog-card:hover,
+        .prog-card.selected {
+            border-color: var(--pc-color, rgba(124, 58, 237, .3));
+        }
+
+        .prog-card:hover::after,
+        .prog-card.selected::after {
+            opacity: 1
+        }
+
+        .prog-card.selected {
+            box-shadow: 0 0 30px rgba(124, 58, 237, .1)
+        }
+
+        .pc-loss {
+            --pc-color: rgba(0, 245, 212, .3)
+        }
+
+        .pc-gain {
+            --pc-color: rgba(155, 93, 229, .4)
+        }
+
+        .pc-maintain {
+            --pc-color: rgba(249, 168, 37, .3)
+        }
+
+        .prog-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1
+        }
+
+        .prog-pname {
+            font-family: 'Outfit', sans-serif;
+            font-size: .92rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1
+        }
+
+        .prog-pdesc {
+            font-size: .68rem;
+            color: var(--text-3);
+            line-height: 1.5;
+            position: relative;
+            z-index: 1
+        }
+
+        .prog-card.selected .prog-pname {
+            color: var(--purple-l)
+        }
+
+        .wday-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .wday-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--border2);
+            color: var(--purple-l);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .wday-btn:hover {
+            background: rgba(124, 58, 237, .1);
+            border-color: var(--border)
+        }
+
+        .week-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .week-tab {
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: var(--glass);
+            border: 1px solid var(--border2);
+            color: var(--text-2);
+            cursor: pointer;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .week-tab.wt-active {
+            background: var(--purple);
+            border-color: var(--purple-l);
+            color: #fff;
+        }
+
+        .day-pills {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .day-pill {
+            text-align: center;
+            padding: 10px 5px;
+            border-radius: 12px;
+            background: var(--glass);
+            border: 1px solid var(--border2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .day-pill.dp-active {
+            border-color: var(--purple-l);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .day-pill.dp-done {
+            opacity: 0.6;
+        }
+
+        .dp-num {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .dp-lbl {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .wday-center {
+            text-align: center;
+            flex: 1
+        }
+
+        .wday-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #22d3ee
+        }
+
+        .wday-title-sub {
+            font-size: .72rem;
+            color: var(--text-3);
+            margin-top: 2px
+        }
+
+        .workout-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap
+        }
+
+        .workout-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            flex: 1
+        }
+
+        .workout-dur {
+            font-size: .82rem;
+            color: var(--cyan);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .rest-card {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, .06), rgba(6, 182, 212, .03));
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+        }
+
+        .rest-icon {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 16px
+        }
+
+        .rest-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--purple-l);
+            margin-bottom: 8px
+        }
+
+        .rest-sub {
+            font-size: .84rem;
+            color: var(--text-2);
+            line-height: 1.6;
+            max-width: 320px;
+            margin: 0 auto
+        }
+
+        @media(max-width:600px) {
+            .prog-picker {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i data-lucide="dumbbell" style="color:#fff;width:22px;height:22px"></i>
+                </div><span class="logo-text">Masar</span>
+            </div>
+            <div class="nav-section-label" data-i18n="main">Main</div>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i><span class="nav-label"
+                    data-i18n="dashboard">Dashboard</span></a>
+            <a href="stats.html" class="nav-item"><i data-lucide="zap"></i><span class="nav-label"
+                    data-i18n="stats">Stats</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="tools">Tools</div>
+            <a href="diet.html" class="nav-item"><i data-lucide="utensils"></i><span class="nav-label"
+                    data-i18n="diet">Diet Plan</span></a>
+            <a href="workout.html" class="nav-item active"><i data-lucide="dumbbell"></i><span class="nav-label"
+                    data-i18n="workout">Workout</span></a>
+            <a href="progress.html" class="nav-item"><i data-lucide="trending-up"></i><span class="nav-label"
+                    data-i18n="progress">Progress</span></a>
+            <a href="shopping.html" class="nav-item"><i data-lucide="shopping-cart"></i><span class="nav-label"
+                    data-i18n="shopping">Shopping</span></a>
+
+            <div class="nav-section-label" style="margin-top:14px" data-i18n="account">Account</div>
+            <a href="settings.html" class="nav-item"><i data-lucide="settings"></i><span class="nav-label"
+                    data-i18n="settings">Settings</span></a>
+            <a href="login.html" id="auth-link" class="nav-item"><i data-lucide="log-in"></i><span class="nav-label"
+                    data-i18n="login">Login</span></a>
+
+            <div class="sidebar-footer">
+                <div style="color: var(--purple-l); font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">✨ Define
+                    Your Masar</div>
+                <span style="opacity: 0.6; font-size: 0.75rem;">Masar v2.0</span>
+            </div>
+        </nav>
+        <main class="main">
+            <div class="main-inner">
+
+                <div class="page-header fade-up">
+                    <div class="page-title" data-i18n="workout">Workout Program</div>
+                    <p class="page-subtitle" data-i18n="workout_sub">Choose your training program and navigate your
+                        30-day schedule</p>
+                </div>
+
+                <!-- Program Picker -->
+                <div class="prog-picker fade-up-2">
+                    <div class="prog-card pc-loss" id="pc-loss" onclick="pickProg('loss')">
+                        <div class="prog-icon">🔥</div>
+                        <div class="prog-pname" data-i18n="fat_burn">Fat Burn</div>
+                        <div class="prog-pdesc" data-i18n="fat_burn_desc">HIIT + cardio, calorie deficit training</div>
+                    </div>
+                    <div class="prog-card pc-gain" id="pc-gain" onclick="pickProg('gain')">
+                        <div class="prog-icon">💪</div>
+                        <div class="prog-pname" data-i18n="muscle_builder">Muscle Builder</div>
+                        <div class="prog-pdesc" data-i18n="muscle_builder_desc">Push-Pull-Legs hypertrophy split</div>
+                    </div>
+                    <div class="prog-card pc-maintain" id="pc-maintain" onclick="pickProg('maintain')">
+                        <div class="prog-icon">⚖️</div>
+                        <div class="prog-pname" data-i18n="balanced">Balanced</div>
+                        <div class="prog-pdesc" data-i18n="balanced_desc">Strength + cardio + mobility</div>
+                    </div>
+                </div>
+
+                <!-- Workout View -->
+                <div id="workout-view" style="display:none" class="fade-up-3">
+
+                    <!-- Week tabs + day pills inside card -->
+                    <div class="card" style="margin-bottom:14px">
+                        <div class="wday-nav">
+                            <button class="wday-btn" onclick="chgDay(-1)">◀</button>
+                            <div class="wday-center">
+                                <div class="wday-num" id="wd-day">Day 1</div>
+                                <div class="wday-title-sub" id="wd-prog-name"></div>
+                            </div>
+                            <button class="wday-btn" onclick="chgDay(1)">▶</button>
+                        </div>
+
+                        <div class="week-tabs" id="week-tabs"></div>
+                        <div class="day-pills" id="day-pills"></div>
+                    </div>
+
+                    <!-- Workout detail -->
+                    <div id="workout-detail"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script src="state.js"></script>
+    <script src="i18n.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="shared-animations.js"></script>
+    <script>
+        // Check authentication - redirect to login if not logged in
+        const token = localStorage.getItem('masar_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Fetch latest data from server before checking auth state
+        fetchAndSaveState().then(() => {
+            const S = loadState();
+            if (!S.user) {
+                window.location.href = 'login.html';
+            }
+
+            setActiveNav();
+            applyTranslations();
+            lucide.createIcons();
+
+            // Update auth link if logged in
+            if (S.user) {
+                const authLink = document.getElementById('auth-link');
+                if (authLink) {
+                    authLink.innerHTML = '<i data-lucide="log-out"></i><span class="nav-label" data-i18n="logout">Logout</span>';
+                    authLink.href = '#';
+                    authLink.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('masar_token');
+                        localStorage.removeItem('masar_user');
+                        location.href = 'login.html';
+                    };
+                }
+            }
+
+            window.pickProg = (id) => {
+                S.wplan = id;
+                S.curWDay = 0;
+                saveState(S);
+                renderDay(0);
+
+                // Show workout view and hide picker (or just ensure it's visible)
+                const vw = document.getElementById('workout-view');
+                if (vw) vw.style.display = 'block';
+
+                // Update UI selection
+                document.querySelectorAll('.prog-card').forEach(c => c.classList.remove('selected'));
+                const card = document.getElementById('pc-' + id);
+                if (card) card.classList.add('selected');
+            };
+
+            if (!S.tdee) location.href = 'stats.html';
+            if (!S.wplan) S.wplan = S.goal === 'maintenance' ? 'maintain' : S.goal;
+
+            const DAYS_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+            function buildWeekTabs() {
+                const wt = document.getElementById('week-tabs'); wt.innerHTML = '';
+                for (let w = 0; w < 4; w++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'week-tab' + (Math.floor((S.curWDay || 0) / 7) === w ? ' wt-active' : '');
+                    btn.textContent = t('week_x', { x: w + 1 });
+                    btn.onclick = () => renderDay(w * 7);
+                    wt.appendChild(btn);
+                }
+            }
+
+            function buildDayPills(curDay) {
+                const pills = document.getElementById('day-pills'), start = Math.floor(curDay / 7) * 7;
+                pills.innerHTML = '';
+                for (let d = 0; d < 7; d++) {
+                    const idx = start + d, pill = document.createElement('div');
+                    pill.className = 'day-pill' + (idx === curDay ? ' dp-active' : idx < curDay ? ' dp-done' : '');
+                    pill.innerHTML = `<div class="dp-num">${idx + 1}</div><div class="dp-lbl">${t(DAYS_KEYS[d])}</div>`;
+                    pill.onclick = () => renderDay(idx);
+                    pills.appendChild(pill);
+                }
+            }
+
+            function renderDay(idx) {
+                if (!S.wplan) {
+                    document.getElementById('workout-view').style.display = 'none';
+                    return;
+                }
+                document.getElementById('workout-view').style.display = 'block';
+                S.curWDay = idx; saveState(S);
+                const p = WPRG[S.wplan], day = p.days[idx % p.days.length];
+                document.getElementById('wd-day').textContent = t('day_x_of_30', { x: idx + 1 });
+                buildWeekTabs(); buildDayPills(idx);
+
+                const det = document.getElementById('workout-detail'); det.innerHTML = '';
+                if (day.type === 'rest') {
+                    det.innerHTML = `
+                    <div class="rest-card">
+                        <div class="stat-icon-box" style="margin:0 auto 20px;width:64px;height:64px"><i data-lucide="moon" class="icon-glow-purple" style="width:28px;height:28px"></i></div>
+                        <div class="rest-title">${t('rest_recovery_day')}</div>
+                        <div class="rest-sub">${t('rest_recovery_sub')}</div>
+                    </div>
+                `;
+                    lucide.createIcons();
+                    return;
+                }
+
+                const h = document.createElement('div');
+                h.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+                    <div>
+                        <div class="badge ${TYPE_BADGE[day.type]}">${t(day.type)}</div>
+                        <h3 style="font-size:1.4rem;margin-top:8px">${t(day.title)}</h3>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:.7rem;color:var(--text-3);text-transform:uppercase">${t('duration') || 'Duration'}</div>
+                        <div style="font-weight:700;color:var(--purple-l)">${day.dur}</div>
+                    </div>
+                </div>
+            `;
+                det.appendChild(h);
+
+                const factor = Math.max(0.7, Math.min(1.4, (S.tdee || 2000) / 2000));
+                const info = document.createElement('div');
+                info.style = "font-size:0.75rem; color:var(--text-3); margin-bottom:12px; padding:8px; background:rgba(255,255,255,0.03); border-radius:8px";
+                info.textContent = (S.lang === 'ar' ? 'تم تعديل الحمولة حسب طاقة جسمك: ' : 'Intensity scaled: ') + Math.round(factor * 100) + '%';
+                det.appendChild(info);
+
+                day.ex.forEach(e => {
+                    let d = e.d;
+                    if (d.includes('×')) {
+                        const parts = d.split(' × ');
+                        if (parts.length === 2) {
+                            d = Math.round(parseInt(parts[0]) * factor) + ' × ' + parts[1];
+                        }
+                    }
+                    const item = document.createElement('div');
+                    item.className = 'ex-item';
+                    item.innerHTML = `
+                    <div class="ex-dot"></div>
+                    <div class="ex-info">
+                        <div class="ex-name">${t(e.n)}</div>
+                        <div class="ex-sets">${d}</div>
+                    </div>
+                `;
+                    det.appendChild(item);
+                });
+                lucide.createIcons();
+            }
+
+            window.chgDay = d => { const n = (S.curWDay || 0) + d; if (n >= 0 && n < 30) renderDay(n); };
+
+            // Init pickers
+            ['loss', 'gain', 'maintain'].forEach(p => {
+                const el = document.getElementById('pc-' + p);
+                if (el && S.wplan === p) el.classList.add('selected');
+            });
+
+            if (S.wplan) renderDay(S.curWDay || 0);
+        });
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="shared-animations.js"></script>
+</body>
+
+</html>
