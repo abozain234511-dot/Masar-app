@@ -9,9 +9,9 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "./WhatsApp Image 2026-02-09 at 11.05.47 PM.jpeg",
+            "src": "./user-icon.png",
             "sizes": "512x512",
-            "type": "image/jpeg",
+            "type": "image/png",
             "purpose": "any maskable"
         }
     ],
