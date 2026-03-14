@@ -1,6 +1,6 @@
 // ── SHARED STATE ──────────────────────────────────────────────────
 // API URL - uses Vercel server for offline APK
-const API_URL = window.location.origin + '/api';
+const API_URL = 'https://masar-gym.vercel.app/api';
 const DEFAULT = {
   tdee: 0, bmr: 0, goal: 'maintain', weight: 0, gender: 'M',
   plan: [], curDay: 0, wplan: null, curWDay: 0,
@@ -26,12 +26,7 @@ function logout() {
   localStorage.removeItem('masar_user');
   localStorage.removeItem('masar_guest_mode');
   localStorage.removeItem('gym_os_state');
-  // SPA navigation - use router instead of page redirect
-  if (window.Router) {
-    window.Router.navigate('/login');
-  } else {
-    location.href = 'login.html';
-  }
+  location.href = 'login.html';
 }
 
 async function api(path, method = 'GET', body = null) {
